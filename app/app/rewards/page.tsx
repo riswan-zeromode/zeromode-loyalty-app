@@ -14,6 +14,7 @@ import {
   getUserCoinBalance,
   type Reward,
 } from "@/lib/loyalty-data";
+import { getErrorMessage, logSupabaseError } from "@/lib/supabase-errors";
 
 export default function UserRewardsPage() {
   const router = useRouter();
@@ -39,8 +40,11 @@ export default function UserRewardsPage() {
       setRewards(nextRewards);
       setBranding(nextBranding);
       setIsLoading(false);
-    } catch {
-      setError("Unable to load rewards right now.");
+    } catch (rewardsError) {
+      logSupabaseError("user rewards load", rewardsError);
+      setError(
+        getErrorMessage(rewardsError, "Unable to load rewards right now."),
+      );
       setBalance(0);
       setRewards([]);
       setIsLoading(false);

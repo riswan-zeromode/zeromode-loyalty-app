@@ -4,6 +4,7 @@ import type { FormEvent } from "react";
 import { useCallback, useEffect, useState } from "react";
 import { getUserRoleByEmail, normalizeEmail } from "@/lib/access";
 import { supabase } from "@/lib/supabase";
+import { getErrorMessage, logSupabaseError } from "@/lib/supabase-errors";
 
 type ApprovedUser = {
   id: string | number;
@@ -93,8 +94,16 @@ export default function AdminMembersPage() {
       .order("created_at", { ascending: false });
 
     if (approvedUsersError) {
-      console.error("Unable to load approved users", approvedUsersError);
-      setError("Unable to load approved customers right now.");
+      logSupabaseError(
+        "admin members approved_users select list",
+        approvedUsersError,
+      );
+      setError(
+        getErrorMessage(
+          approvedUsersError,
+          "Unable to load approved customers right now.",
+        ),
+      );
       setApprovedUsers([]);
       setIsLoading(false);
       return;
@@ -147,8 +156,10 @@ export default function AdminMembersPage() {
       .insert({ email, status: "approved" });
 
     if (insertError) {
-      console.error("Unable to add approved user", insertError);
-      setError("Unable to add that email right now.");
+      logSupabaseError("admin members approved_users insert", insertError);
+      setError(
+        getErrorMessage(insertError, "Unable to add that email right now."),
+      );
       setIsAdding(false);
       return;
     }
@@ -186,7 +197,10 @@ export default function AdminMembersPage() {
       .eq("id", user.id);
 
     if (updateError) {
-      console.error("Unable to update approved user status", updateError);
+      logSupabaseError(
+        "admin members approved_users update status",
+        updateError,
+      );
       setApprovedUsers((currentUsers) =>
         currentUsers.map((currentUser) =>
           currentUser.id === user.id ? user : currentUser,
@@ -195,7 +209,9 @@ export default function AdminMembersPage() {
       setSelectedUser((currentUser) =>
         currentUser?.id === user.id ? user : currentUser,
       );
-      setError("Unable to update that email right now.");
+      setError(
+        getErrorMessage(updateError, "Unable to update that email right now."),
+      );
       setPendingUserId(null);
       return;
     }
@@ -234,8 +250,10 @@ export default function AdminMembersPage() {
       .eq("id", user.id);
 
     if (deleteError) {
-      console.error("Unable to delete approved user", deleteError);
-      setError("Unable to delete that email right now.");
+      logSupabaseError("admin members approved_users delete", deleteError);
+      setError(
+        getErrorMessage(deleteError, "Unable to delete that email right now."),
+      );
       setPendingUserId(null);
       await loadApprovedUsers();
       return;
@@ -255,10 +273,24 @@ export default function AdminMembersPage() {
       return;
     }
 
-    const amount = Number(pointAmount);
+    const trimmedAmount = pointAmount.trim();
+
+    if (!trimmedAmount) {
+      setError("Enter a point amount.");
+      return;
+    }
+
+    const amount = Number(trimmedAmount);
 
     if (!Number.isFinite(amount) || amount === 0) {
       setError("Enter a positive or negative point amount.");
+      return;
+    }
+
+    const memberEmail = normalizeEmail(selectedUser.email);
+
+    if (!memberEmail) {
+      setError("Selected member is missing an email address.");
       return;
     }
 
@@ -284,27 +316,43 @@ export default function AdminMembersPage() {
     }
 
     const reason = pointReason.trim() || "Manual admin adjustment";
-    const { error: insertError } = await supabase
+    const { data: insertedTransactions, error: insertError } = await supabase
       .from("coin_transactions")
       .insert({
-        user_email: normalizeEmail(selectedUser.email),
+        user_email: memberEmail,
         amount,
         reason,
         created_by: adminEmail,
         rule_key: "manual_adjustment",
         rule_label: "Manual Adjustment",
-      });
+      })
+      .select("id, user_email, amount, reason, created_by, rule_key, rule_label");
 
     if (insertError) {
-      console.error("Unable to add manual coin transaction", insertError);
-      setError("Unable to add points right now.");
+      logSupabaseError(
+        "admin members coin_transactions insert manual_adjustment",
+        insertError,
+      );
+      setError(
+        getErrorMessage(insertError, "Unable to add points right now."),
+      );
+      setIsAwardingPoints(false);
+      return;
+    }
+
+    if (!insertedTransactions || insertedTransactions.length === 0) {
+      logSupabaseError(
+        "admin members coin_transactions insert manual_adjustment returned no rows",
+        insertedTransactions,
+      );
+      setError("Coin adjustment was not confirmed by Supabase.");
       setIsAwardingPoints(false);
       return;
     }
 
     setPointAmount("");
     setPointReason("");
-    setNotice(`${amount > 0 ? "+" : ""}${amount} points saved for ${selectedUser.email}.`);
+    setNotice(`${amount > 0 ? "+" : ""}${amount} points saved for ${memberEmail}.`);
     setIsAwardingPoints(false);
     setSelectedUser(null);
   }

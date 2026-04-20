@@ -1,4 +1,5 @@
 import { normalizeEmail } from "@/lib/access";
+import { throwSupabaseError } from "@/lib/supabase-errors";
 import { supabase } from "@/lib/supabase";
 
 export type CoinTransaction = {
@@ -49,8 +50,11 @@ export async function getUserCoinBalance(email: string) {
     .eq("user_email", normalizedEmail);
 
   if (error) {
-    console.error("Unable to load user coin transactions", error);
-    throw error;
+    throwSupabaseError(
+      "coin_transactions select user coin balance",
+      error,
+      "Unable to load user coin balance.",
+    );
   }
 
   return sumCoinTransactions((data ?? []) as CoinTransaction[]);
@@ -64,8 +68,11 @@ export async function getActiveRewards() {
     .order("checkpoint_coins", { ascending: true });
 
   if (error) {
-    console.error("Unable to load active rewards", error);
-    throw error;
+    throwSupabaseError(
+      "rewards select active rewards",
+      error,
+      "Unable to load active rewards.",
+    );
   }
 
   return (data ?? []) as Reward[];
@@ -77,8 +84,11 @@ export async function getLeaderboardRows() {
     .select("user_email, amount");
 
   if (error) {
-    console.error("Unable to load leaderboard transactions", error);
-    throw error;
+    throwSupabaseError(
+      "coin_transactions select leaderboard totals",
+      error,
+      "Unable to load leaderboard.",
+    );
   }
 
   const totals = new Map<string, number>();
@@ -104,8 +114,11 @@ export async function getTotalCoinsIssued() {
     .select("amount");
 
   if (error) {
-    console.error("Unable to load total coins issued", error);
-    throw error;
+    throwSupabaseError(
+      "coin_transactions select total coins issued",
+      error,
+      "Unable to load total coins issued.",
+    );
   }
 
   return sumCoinTransactions((data ?? []) as CoinTransaction[]);

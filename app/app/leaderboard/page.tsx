@@ -13,6 +13,7 @@ import {
   getLeaderboardRows,
   type LeaderboardRow,
 } from "@/lib/loyalty-data";
+import { getErrorMessage, logSupabaseError } from "@/lib/supabase-errors";
 
 export default function UserLeaderboardPage() {
   const router = useRouter();
@@ -36,8 +37,14 @@ export default function UserLeaderboardPage() {
       setLeaderboard(nextLeaderboard);
       setBranding(nextBranding);
       setIsLoading(false);
-    } catch {
-      setError("Unable to load leaderboard right now.");
+    } catch (leaderboardError) {
+      logSupabaseError("user leaderboard load", leaderboardError);
+      setError(
+        getErrorMessage(
+          leaderboardError,
+          "Unable to load leaderboard right now.",
+        ),
+      );
       setLeaderboard([]);
       setIsLoading(false);
     }

@@ -8,6 +8,7 @@ import {
 } from "@/lib/branding";
 import { formatNumber, getTotalCoinsIssued } from "@/lib/loyalty-data";
 import { supabase } from "@/lib/supabase";
+import { getErrorMessage, logSupabaseError } from "@/lib/supabase-errors";
 
 type AdminOverviewStats = {
   approvedUsers: number;
@@ -56,30 +57,45 @@ export default function AdminDashboardPage() {
       ]);
 
       if (approvedUsersResult.error) {
-        console.error(
-          "Unable to load approved users count",
+        logSupabaseError(
+          "admin overview approved_users select approved count",
           approvedUsersResult.error,
         );
-        setError("Unable to load admin overview right now.");
+        setError(
+          getErrorMessage(
+            approvedUsersResult.error,
+            "Unable to load approved users count.",
+          ),
+        );
         setStats(emptyStats);
         setIsLoading(false);
         return;
       }
 
       if (adminsResult.error) {
-        console.error("Unable to load admins count", adminsResult.error);
-        setError("Unable to load admin overview right now.");
+        logSupabaseError(
+          "admin overview admins select count",
+          adminsResult.error,
+        );
+        setError(
+          getErrorMessage(adminsResult.error, "Unable to load admins count."),
+        );
         setStats(emptyStats);
         setIsLoading(false);
         return;
       }
 
       if (activeRewardsResult.error) {
-        console.error(
-          "Unable to load active rewards count",
+        logSupabaseError(
+          "admin overview rewards select active count",
           activeRewardsResult.error,
         );
-        setError("Unable to load admin overview right now.");
+        setError(
+          getErrorMessage(
+            activeRewardsResult.error,
+            "Unable to load active rewards count.",
+          ),
+        );
         setStats(emptyStats);
         setIsLoading(false);
         return;
@@ -93,8 +109,14 @@ export default function AdminDashboardPage() {
       });
       setBranding(nextBranding);
       setIsLoading(false);
-    } catch {
-      setError("Unable to load admin overview right now.");
+    } catch (overviewError) {
+      logSupabaseError("admin overview load", overviewError);
+      setError(
+        getErrorMessage(
+          overviewError,
+          "Unable to load admin overview right now.",
+        ),
+      );
       setStats(emptyStats);
       setIsLoading(false);
       return;

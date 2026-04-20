@@ -14,6 +14,7 @@ import {
   getUserCoinBalance,
   type Reward,
 } from "@/lib/loyalty-data";
+import { getErrorMessage, logSupabaseError } from "@/lib/supabase-errors";
 
 function PageHeader({
   appName,
@@ -260,8 +261,14 @@ export default function UserDashboardPage() {
       setRewards(nextRewards);
       setBranding(nextBranding);
       setIsLoading(false);
-    } catch {
-      setError("Unable to load your loyalty dashboard right now.");
+    } catch (dashboardError) {
+      logSupabaseError("user dashboard load", dashboardError);
+      setError(
+        getErrorMessage(
+          dashboardError,
+          "Unable to load your loyalty dashboard right now.",
+        ),
+      );
       setBalance(0);
       setRewards([]);
       setIsLoading(false);
