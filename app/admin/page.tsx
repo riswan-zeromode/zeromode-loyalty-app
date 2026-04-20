@@ -16,11 +16,6 @@ type AdminOverviewStats = {
   totalCoinsIssued: number;
 };
 
-type CountResult = {
-  count: number | null;
-  error: unknown | null;
-};
-
 const emptyStats: AdminOverviewStats = {
   approvedUsers: 0,
   admins: 0,
@@ -39,71 +34,71 @@ export default function AdminDashboardPage() {
     setIsLoading(true);
     setError("");
 
-    let approvedUsersResult: CountResult = { count: null, error: null };
-    let adminsResult: CountResult = { count: null, error: null };
-    let activeRewardsResult: CountResult = { count: null, error: null };
-    let totalCoinsIssued = 0;
-    let nextBranding: BrandingSettings = defaultBranding;
-
     try {
-      const overviewData = await Promise.all([
+      const [
+        approvedUsersResult,
+        adminsResult,
+        activeRewardsResult,
+        totalCoinsIssued,
+        nextBranding,
+      ] = await Promise.all([
         supabase
           .from("approved_users")
-          .select("*", { count: "exact", head: true })
+          .select("id")
           .eq("status", "approved"),
-        supabase.from("admins").select("*", { count: "exact", head: true }),
+        supabase.from("admins").select("email"),
         supabase
           .from("rewards")
-          .select("*", { count: "exact", head: true })
+          .select("id")
           .eq("is_active", true),
         getTotalCoinsIssued(),
         getBrandingSettings(),
       ]);
 
-      approvedUsersResult = overviewData[0] as CountResult;
-      adminsResult = overviewData[1] as CountResult;
-      activeRewardsResult = overviewData[2] as CountResult;
-      totalCoinsIssued = overviewData[3];
-      nextBranding = overviewData[4];
+      if (approvedUsersResult.error) {
+        console.error(
+          "Unable to load approved users count",
+          approvedUsersResult.error,
+        );
+        setError("Unable to load admin overview right now.");
+        setStats(emptyStats);
+        setIsLoading(false);
+        return;
+      }
+
+      if (adminsResult.error) {
+        console.error("Unable to load admins count", adminsResult.error);
+        setError("Unable to load admin overview right now.");
+        setStats(emptyStats);
+        setIsLoading(false);
+        return;
+      }
+
+      if (activeRewardsResult.error) {
+        console.error(
+          "Unable to load active rewards count",
+          activeRewardsResult.error,
+        );
+        setError("Unable to load admin overview right now.");
+        setStats(emptyStats);
+        setIsLoading(false);
+        return;
+      }
+
+      setStats({
+        approvedUsers: approvedUsersResult.data?.length ?? 0,
+        admins: adminsResult.data?.length ?? 0,
+        activeRewards: activeRewardsResult.data?.length ?? 0,
+        totalCoinsIssued,
+      });
+      setBranding(nextBranding);
+      setIsLoading(false);
     } catch {
       setError("Unable to load admin overview right now.");
       setStats(emptyStats);
       setIsLoading(false);
       return;
     }
-
-    if (approvedUsersResult.error) {
-      console.error("Unable to load approved users count", approvedUsersResult.error);
-      setError("Unable to load admin overview right now.");
-      setStats(emptyStats);
-      setIsLoading(false);
-      return;
-    }
-
-    if (adminsResult.error) {
-      console.error("Unable to load admins count", adminsResult.error);
-      setError("Unable to load admin overview right now.");
-      setStats(emptyStats);
-      setIsLoading(false);
-      return;
-    }
-
-    if (activeRewardsResult.error) {
-      console.error("Unable to load active rewards count", activeRewardsResult.error);
-      setError("Unable to load admin overview right now.");
-      setStats(emptyStats);
-      setIsLoading(false);
-      return;
-    }
-
-    setStats({
-      approvedUsers: approvedUsersResult.count ?? 0,
-      admins: adminsResult.count ?? 0,
-      activeRewards: activeRewardsResult.count ?? 0,
-      totalCoinsIssued,
-    });
-    setBranding(nextBranding);
-    setIsLoading(false);
   }, []);
 
   useEffect(() => {

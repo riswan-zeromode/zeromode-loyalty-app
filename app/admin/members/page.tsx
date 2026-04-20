@@ -257,8 +257,8 @@ export default function AdminMembersPage() {
 
     const amount = Number(pointAmount);
 
-    if (!Number.isFinite(amount) || amount <= 0) {
-      setError("Enter a positive point amount.");
+    if (!Number.isFinite(amount) || amount === 0) {
+      setError("Enter a positive or negative point amount.");
       return;
     }
 
@@ -304,8 +304,9 @@ export default function AdminMembersPage() {
 
     setPointAmount("");
     setPointReason("");
-    setNotice(`${amount} points added to ${selectedUser.email}.`);
+    setNotice(`${amount > 0 ? "+" : ""}${amount} points saved for ${selectedUser.email}.`);
     setIsAwardingPoints(false);
+    setSelectedUser(null);
   }
 
   const activeCount = approvedUsers.filter((user) =>
@@ -600,12 +601,11 @@ export default function AdminMembersPage() {
                   htmlFor="manual-points"
                   className="text-sm font-normal text-[#F5F5F5]/65"
                 >
-                  Add points
+                  Adjust points
                 </label>
                 <input
                   id="manual-points"
                   type="number"
-                  min="1"
                   step="1"
                   value={pointAmount}
                   onChange={(event) => {
@@ -613,7 +613,7 @@ export default function AdminMembersPage() {
                     setError("");
                     setNotice("");
                   }}
-                  placeholder="10"
+                  placeholder="10 or -10"
                   className="mt-2 h-11 w-full rounded-lg border border-white/10 bg-white/[0.06] px-4 text-sm font-normal text-[#F5F5F5] outline-none transition placeholder:text-[#F5F5F5]/35 focus:border-[#D51919] focus:bg-white/[0.09] focus:ring-2 focus:ring-[#D51919]/35"
                 />
               </div>
@@ -657,7 +657,7 @@ export default function AdminMembersPage() {
                   disabled={isAwardingPoints}
                   className="h-10 rounded-lg bg-[#D51919] px-4 text-sm font-bold text-[#F5F5F5] transition hover:bg-[#b91616] focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#171717] disabled:cursor-not-allowed disabled:opacity-70"
                 >
-                  {isAwardingPoints ? "Saving..." : "Save"}
+                  {isAwardingPoints ? "Saving..." : "Save adjustment"}
                 </button>
 
                 <div className="flex flex-col gap-2 sm:flex-row">
