@@ -18,6 +18,7 @@ export default function AdminLayout({
       label="ZEROMODE Admin"
       title="Control Panel"
       navLinks={adminNavLinks}
+      requiredRole="admin"
     >
       {children}
     </DashboardShell>

@@ -2,7 +2,7 @@
 
 import type { FormEvent } from "react";
 import { useCallback, useEffect, useState } from "react";
-import { normalizeEmail } from "@/lib/access";
+import { getUserRoleByEmail, normalizeEmail } from "@/lib/access";
 import { supabase } from "@/lib/supabase";
 
 type ApprovedUser = {
@@ -77,6 +77,10 @@ export default function AdminMembersPage() {
   const [pendingUserId, setPendingUserId] = useState<string | number | null>(
     null,
   );
+  const [selectedUser, setSelectedUser] = useState<ApprovedUser | null>(null);
+  const [pointAmount, setPointAmount] = useState("");
+  const [pointReason, setPointReason] = useState("");
+  const [isAwardingPoints, setIsAwardingPoints] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
 
@@ -108,6 +112,21 @@ export default function AdminMembersPage() {
 
     return () => window.clearTimeout(timeoutId);
   }, [loadApprovedUsers]);
+
+  function openMemberModal(user: ApprovedUser) {
+    setSelectedUser(user);
+    setPointAmount("");
+    setPointReason("");
+    setError("");
+    setNotice("");
+  }
+
+  function closeMemberModal() {
+    setSelectedUser(null);
+    setPointAmount("");
+    setPointReason("");
+    setIsAwardingPoints(false);
+  }
 
   async function handleAddEmail(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -155,6 +174,11 @@ export default function AdminMembersPage() {
           : currentUser,
       ),
     );
+    setSelectedUser((currentUser) =>
+      currentUser?.id === user.id
+        ? { ...currentUser, status: nextStatus }
+        : currentUser,
+    );
 
     const { error: updateError } = await supabase
       .from("approved_users")
@@ -167,6 +191,9 @@ export default function AdminMembersPage() {
         currentUsers.map((currentUser) =>
           currentUser.id === user.id ? user : currentUser,
         ),
+      );
+      setSelectedUser((currentUser) =>
+        currentUser?.id === user.id ? user : currentUser,
       );
       setError("Unable to update that email right now.");
       setPendingUserId(null);
@@ -215,7 +242,70 @@ export default function AdminMembersPage() {
     }
 
     setNotice("Customer permanently deleted.");
+    setSelectedUser((currentUser) =>
+      currentUser?.id === user.id ? null : currentUser,
+    );
     setPendingUserId(null);
+  }
+
+  async function handleAwardPoints(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!selectedUser) {
+      return;
+    }
+
+    const amount = Number(pointAmount);
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+      setError("Enter a positive point amount.");
+      return;
+    }
+
+    const adminEmail = normalizeEmail(
+      window.localStorage.getItem("userEmail") ?? "",
+    );
+
+    if (!adminEmail) {
+      setError("Admin session expired. Sign in again before adding points.");
+      return;
+    }
+
+    setIsAwardingPoints(true);
+    setError("");
+    setNotice("");
+
+    const role = await getUserRoleByEmail(adminEmail);
+
+    if (role !== "admin") {
+      setError("Only admins can add points.");
+      setIsAwardingPoints(false);
+      return;
+    }
+
+    const reason = pointReason.trim() || "Manual admin adjustment";
+    const { error: insertError } = await supabase
+      .from("coin_transactions")
+      .insert({
+        user_email: normalizeEmail(selectedUser.email),
+        amount,
+        reason,
+        created_by: adminEmail,
+        rule_key: "manual_adjustment",
+        rule_label: "Manual Adjustment",
+      });
+
+    if (insertError) {
+      console.error("Unable to add manual coin transaction", insertError);
+      setError("Unable to add points right now.");
+      setIsAwardingPoints(false);
+      return;
+    }
+
+    setPointAmount("");
+    setPointReason("");
+    setNotice(`${amount} points added to ${selectedUser.email}.`);
+    setIsAwardingPoints(false);
   }
 
   const activeCount = approvedUsers.filter((user) =>
@@ -248,6 +338,15 @@ export default function AdminMembersPage() {
       : statusFilter === "deactivated"
         ? "No deactivated customers"
         : "No customers yet";
+  const selectedUserIsActive = selectedUser
+    ? isActiveMember(selectedUser.status)
+    : false;
+  const selectedUserIsDeactivated = selectedUser
+    ? isDeactivatedMember(selectedUser.status)
+    : false;
+  const selectedUserNextStatus: MemberStatusUpdate = selectedUserIsActive
+    ? "blocked"
+    : "approved";
 
   return (
     <>
@@ -359,7 +458,16 @@ export default function AdminMembersPage() {
                 return (
                   <div
                     key={user.id}
-                    className="grid gap-3 py-4 xl:grid-cols-[minmax(0,1fr)_150px_170px_220px]"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => openMemberModal(user)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        openMemberModal(user);
+                      }
+                    }}
+                    className="grid cursor-pointer gap-3 rounded-lg px-3 py-4 transition hover:bg-white/[0.04] focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#171717] xl:grid-cols-[minmax(0,1fr)_150px_170px_220px]"
                   >
                     <div className="min-w-0">
                       <p className="truncate text-sm font-normal text-[#F5F5F5]">
@@ -390,7 +498,10 @@ export default function AdminMembersPage() {
                       <button
                         type="button"
                         disabled={pendingUserId === user.id}
-                        onClick={() => handleSetMemberStatus(user, nextStatus)}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          void handleSetMemberStatus(user, nextStatus);
+                        }}
                         className="h-9 rounded-lg border border-white/10 bg-white/[0.06] px-4 text-sm font-normal text-[#F5F5F5] transition hover:border-[#D51919]/60 hover:bg-[#D51919]/15 focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#121212] disabled:cursor-not-allowed disabled:opacity-45"
                       >
                         {pendingUserId === user.id
@@ -404,7 +515,10 @@ export default function AdminMembersPage() {
                         <button
                           type="button"
                           disabled={pendingUserId === user.id}
-                          onClick={() => handleDeleteUser(user)}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            void handleDeleteUser(user);
+                          }}
                           className="h-9 rounded-lg border border-[#D51919]/40 bg-[#D51919]/10 px-4 text-sm font-normal text-[#F5F5F5] transition hover:bg-[#D51919]/20 focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#121212] disabled:cursor-not-allowed disabled:opacity-45"
                         >
                           Delete
@@ -418,6 +532,169 @@ export default function AdminMembersPage() {
           ) : null}
         </div>
       </section>
+
+      {selectedUser ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-8">
+          <button
+            type="button"
+            aria-label="Close member details"
+            className="absolute inset-0 bg-black/75 backdrop-blur-sm"
+            onClick={closeMemberModal}
+          />
+
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="member-details-title"
+            className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg border border-white/10 bg-[#171717] p-6 shadow-2xl shadow-black/40"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <p className="text-xs font-normal uppercase tracking-[0.18em] text-[#D51919]">
+                  Member Details
+                </p>
+                <h2
+                  id="member-details-title"
+                  className="mt-3 truncate text-2xl font-bold tracking-tight text-[#F5F5F5]"
+                >
+                  {selectedUser.email}
+                </h2>
+              </div>
+
+              <button
+                type="button"
+                onClick={closeMemberModal}
+                className="h-9 rounded-lg border border-white/10 bg-white/[0.06] px-3 text-sm font-normal text-[#F5F5F5]/70 transition hover:border-[#D51919]/60 hover:text-[#F5F5F5] focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#171717]"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="mt-6 grid gap-3 sm:grid-cols-3">
+              <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
+                <p className="text-xs font-normal uppercase tracking-[0.16em] text-[#F5F5F5]/45">
+                  Status
+                </p>
+                <span
+                  className={`mt-3 inline-flex w-fit rounded-full px-3 py-1 text-xs font-normal ring-1 ${getMemberStatusClasses(
+                    selectedUser.status,
+                  )}`}
+                >
+                  {getMemberStatusLabel(selectedUser.status)}
+                </span>
+              </div>
+
+              <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4 sm:col-span-2">
+                <p className="text-xs font-normal uppercase tracking-[0.16em] text-[#F5F5F5]/45">
+                  Created
+                </p>
+                <p className="mt-3 text-sm font-normal text-[#F5F5F5]">
+                  {formatDate(selectedUser.created_at)}
+                </p>
+              </div>
+            </div>
+
+            <form className="mt-6 space-y-4" onSubmit={handleAwardPoints}>
+              <div>
+                <label
+                  htmlFor="manual-points"
+                  className="text-sm font-normal text-[#F5F5F5]/65"
+                >
+                  Add points
+                </label>
+                <input
+                  id="manual-points"
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={pointAmount}
+                  onChange={(event) => {
+                    setPointAmount(event.target.value);
+                    setError("");
+                    setNotice("");
+                  }}
+                  placeholder="10"
+                  className="mt-2 h-11 w-full rounded-lg border border-white/10 bg-white/[0.06] px-4 text-sm font-normal text-[#F5F5F5] outline-none transition placeholder:text-[#F5F5F5]/35 focus:border-[#D51919] focus:bg-white/[0.09] focus:ring-2 focus:ring-[#D51919]/35"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="manual-reason"
+                  className="text-sm font-normal text-[#F5F5F5]/65"
+                >
+                  Reason
+                </label>
+                <input
+                  id="manual-reason"
+                  type="text"
+                  value={pointReason}
+                  onChange={(event) => {
+                    setPointReason(event.target.value);
+                    setError("");
+                    setNotice("");
+                  }}
+                  placeholder="Manual admin adjustment"
+                  className="mt-2 h-11 w-full rounded-lg border border-white/10 bg-white/[0.06] px-4 text-sm font-normal text-[#F5F5F5] outline-none transition placeholder:text-[#F5F5F5]/35 focus:border-[#D51919] focus:bg-white/[0.09] focus:ring-2 focus:ring-[#D51919]/35"
+                />
+              </div>
+
+              {error ? (
+                <p className="rounded-lg border border-[#D51919]/35 bg-[#D51919]/10 p-3 text-sm font-normal text-[#F5F5F5]">
+                  {error}
+                </p>
+              ) : null}
+
+              {notice ? (
+                <p className="rounded-lg border border-white/10 bg-white/[0.04] p-3 text-sm font-normal text-[#F5F5F5]/65">
+                  {notice}
+                </p>
+              ) : null}
+
+              <div className="flex flex-col gap-3 border-t border-white/10 pt-5 sm:flex-row sm:items-center sm:justify-between">
+                <button
+                  type="submit"
+                  disabled={isAwardingPoints}
+                  className="h-10 rounded-lg bg-[#D51919] px-4 text-sm font-bold text-[#F5F5F5] transition hover:bg-[#b91616] focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#171717] disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {isAwardingPoints ? "Saving..." : "Save"}
+                </button>
+
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <button
+                    type="button"
+                    disabled={pendingUserId === selectedUser.id}
+                    onClick={() =>
+                      void handleSetMemberStatus(
+                        selectedUser,
+                        selectedUserNextStatus,
+                      )
+                    }
+                    className="h-10 rounded-lg border border-white/10 bg-white/[0.06] px-4 text-sm font-normal text-[#F5F5F5] transition hover:border-[#D51919]/60 hover:bg-[#D51919]/15 focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#171717] disabled:cursor-not-allowed disabled:opacity-45"
+                  >
+                    {pendingUserId === selectedUser.id
+                      ? "Saving..."
+                      : selectedUserIsActive
+                        ? "Deactivate"
+                        : "Reactivate"}
+                  </button>
+
+                  {selectedUserIsDeactivated ? (
+                    <button
+                      type="button"
+                      disabled={pendingUserId === selectedUser.id}
+                      onClick={() => void handleDeleteUser(selectedUser)}
+                      className="h-10 rounded-lg border border-[#D51919]/40 bg-[#D51919]/10 px-4 text-sm font-normal text-[#F5F5F5] transition hover:bg-[#D51919]/20 focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#171717] disabled:cursor-not-allowed disabled:opacity-45"
+                    >
+                      Delete
+                    </button>
+                  ) : null}
+                </div>
+              </div>
+            </form>
+          </section>
+        </div>
+      ) : null}
     </>
   );
 }

@@ -40,10 +40,12 @@ function PageHeader({
 function StatsCard({
   balance,
   nextReward,
+  hasRewards,
   coinName,
 }: {
   balance: number;
   nextReward: Reward | null;
+  hasRewards: boolean;
   coinName: string;
 }) {
   return (
@@ -64,7 +66,9 @@ function StatsCard({
           <p className="mt-2 text-2xl font-bold tracking-tight text-[#F5F5F5]">
             {nextReward
               ? `${formatNumber(nextReward.checkpoint_coins)} ${coinName}`
-              : "All rewards unlocked"}
+              : hasRewards
+                ? "All rewards unlocked"
+                : "No rewards yet"}
           </p>
         </div>
       </div>
@@ -83,9 +87,14 @@ function ProgressCard({
   nextReward: Reward | null;
   coinName: string;
 }) {
-  const targetCoins = nextReward?.checkpoint_coins ?? balance;
+  const hasRewards = rewards.length > 0;
+  const targetCoins = nextReward?.checkpoint_coins ?? (hasRewards ? balance : 0);
   const progressPercent =
-    targetCoins > 0 ? Math.min((balance / targetCoins) * 100, 100) : 100;
+    nextReward && targetCoins > 0
+      ? Math.min((balance / targetCoins) * 100, 100)
+      : hasRewards
+        ? 100
+        : 0;
 
   return (
     <section className="rounded-lg border border-white/10 bg-[#171717] p-6">
@@ -100,7 +109,11 @@ function ProgressCard({
         </div>
         <p className="text-sm font-normal text-[#F5F5F5]/65">
           {formatNumber(balance)} /{" "}
-          {nextReward ? formatNumber(nextReward.checkpoint_coins) : "Complete"}
+          {nextReward
+            ? formatNumber(nextReward.checkpoint_coins)
+            : hasRewards
+              ? "Complete"
+              : "No rewards"}
         </p>
       </div>
 
@@ -116,13 +129,16 @@ function ProgressCard({
           <span>
             {nextReward
               ? `${formatNumber(nextReward.checkpoint_coins)} ${coinName}`
-              : "Complete"}
+              : hasRewards
+                ? "Complete"
+                : "No rewards"}
           </span>
         </div>
       </div>
 
-      <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {rewards.slice(0, 4).map((reward) => {
+      {hasRewards ? (
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {rewards.slice(0, 4).map((reward) => {
           const unlocked = reward.checkpoint_coins <= balance;
 
           return (
@@ -143,8 +159,15 @@ function ProgressCard({
               </p>
             </div>
           );
-        })}
-      </div>
+          })}
+        </div>
+      ) : (
+        <div className="mt-8 rounded-lg border border-white/10 bg-white/[0.04] p-5">
+          <p className="text-sm font-normal leading-6 text-[#F5F5F5]/60">
+            No active reward checkpoints are available yet.
+          </p>
+        </div>
+      )}
     </section>
   );
 }
@@ -152,10 +175,12 @@ function ProgressCard({
 function RewardsPreview({
   unlockedRewards,
   lockedRewards,
+  hasRewards,
   coinName,
 }: {
   unlockedRewards: Reward[];
   lockedRewards: Reward[];
+  hasRewards: boolean;
   coinName: string;
 }) {
   return (
@@ -199,8 +224,9 @@ function RewardsPreview({
         ) : (
           <div className="rounded-lg border border-white/10 bg-white/[0.04] p-5 md:col-span-2">
             <p className="text-sm font-normal leading-6 text-[#F5F5F5]/60">
-              No rewards unlocked yet. Earn more {coinName} to activate your first
-              checkpoint.
+              {hasRewards
+                ? `No rewards unlocked yet. Earn more ${coinName} to activate your first checkpoint.`
+                : "No active rewards are available yet."}
             </p>
           </div>
         )}
@@ -297,6 +323,7 @@ export default function UserDashboardPage() {
           <StatsCard
             balance={balance}
             nextReward={nextReward}
+            hasRewards={rewards.length > 0}
             coinName={branding.coin_name}
           />
           <ProgressCard
@@ -308,6 +335,7 @@ export default function UserDashboardPage() {
           <RewardsPreview
             unlockedRewards={unlockedRewards}
             lockedRewards={lockedRewards}
+            hasRewards={rewards.length > 0}
             coinName={branding.coin_name}
           />
         </div>

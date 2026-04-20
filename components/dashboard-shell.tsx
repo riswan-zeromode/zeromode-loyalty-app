@@ -10,6 +10,7 @@ import {
   getBrandingSettings,
   type BrandingSettings,
 } from "@/lib/branding";
+import { getUserRoleByEmail, normalizeEmail, type UserRole } from "@/lib/access";
 
 const userEmailStorageKey = "userEmail";
 
@@ -23,11 +24,13 @@ export function DashboardShell({
   label,
   title,
   navLinks,
+  requiredRole,
 }: {
   children: React.ReactNode;
   label: string;
   title: string;
   navLinks: DashboardNavLink[];
+  requiredRole?: UserRole;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -38,7 +41,7 @@ export function DashboardShell({
     useState<BrandingSettings>(defaultBranding);
 
   useEffect(() => {
-    const storedEmail = localStorage.getItem(userEmailStorageKey);
+    const storedEmail = localStorage.getItem(userEmailStorageKey) ?? "";
 
     if (!storedEmail) {
       router.replace("/login");
@@ -46,12 +49,28 @@ export function DashboardShell({
     }
 
     const timeoutId = window.setTimeout(() => {
-      setUserEmail(storedEmail);
-      setHasCheckedSession(true);
+      async function checkSession() {
+        const normalizedEmail = normalizeEmail(storedEmail);
+
+        if (requiredRole) {
+          const role = await getUserRoleByEmail(normalizedEmail);
+
+          if (role !== requiredRole) {
+            localStorage.removeItem(userEmailStorageKey);
+            router.replace("/login");
+            return;
+          }
+        }
+
+        setUserEmail(normalizedEmail);
+        setHasCheckedSession(true);
+      }
+
+      void checkSession();
     }, 0);
 
     return () => window.clearTimeout(timeoutId);
-  }, [router]);
+  }, [requiredRole, router]);
 
   useEffect(() => {
     let isMounted = true;
