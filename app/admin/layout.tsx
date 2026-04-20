@@ -3,6 +3,8 @@ import { DashboardShell } from "@/components/dashboard-shell";
 const adminNavLinks = [
   { href: "/admin", label: "Overview" },
   { href: "/admin/members", label: "Members" },
+  { href: "/admin/leaderboard", label: "Leaderboard" },
+  { href: "/admin/logs", label: "Transaction Logs" },
   { href: "/admin/rewards", label: "Rewards" },
   { href: "/admin/coin-rules", label: "Coin Rules" },
   { href: "/admin/settings", label: "Settings" },
