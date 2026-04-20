@@ -2,36 +2,25 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
-
-type CoinTransaction = {
-  amount: number | string | null;
-};
-
-type Reward = {
-  id: string | number;
-  title: string;
-  description: string | null;
-  checkpoint_coins: number;
-  reward_type: string | null;
-  is_active: boolean | null;
-};
-
-function formatCoins(value: number) {
-  return new Intl.NumberFormat("en").format(value);
-}
-
-function sumTransactions(transactions: CoinTransaction[]) {
-  return transactions.reduce((total, transaction) => {
-    const amount = Number(transaction.amount ?? 0);
-    return Number.isFinite(amount) ? total + amount : total;
-  }, 0);
-}
+import { normalizeEmail } from "@/lib/access";
+import {
+  defaultBranding,
+  getBrandingSettings,
+  type BrandingSettings,
+} from "@/lib/branding";
+import {
+  formatNumber,
+  getActiveRewards,
+  getUserCoinBalance,
+  type Reward,
+} from "@/lib/loyalty-data";
 
 export default function UserRewardsPage() {
   const router = useRouter();
   const [balance, setBalance] = useState(0);
   const [rewards, setRewards] = useState<Reward[]>([]);
+  const [branding, setBranding] =
+    useState<BrandingSettings>(defaultBranding);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -39,39 +28,23 @@ export default function UserRewardsPage() {
     setIsLoading(true);
     setError("");
 
-    const [transactionsResult, rewardsResult] = await Promise.all([
-      supabase
-        .from("coin_transactions")
-        .select("amount")
-        .eq("user_email", email),
-      supabase
-        .from("rewards")
-        .select("id, title, description, checkpoint_coins, reward_type, is_active")
-        .eq("is_active", true)
-        .order("checkpoint_coins", { ascending: true }),
-    ]);
+    try {
+      const [nextBalance, nextRewards, nextBranding] = await Promise.all([
+        getUserCoinBalance(email),
+        getActiveRewards(),
+        getBrandingSettings(),
+      ]);
 
-    if (transactionsResult.error) {
-      console.error("Unable to load coin transactions", transactionsResult.error);
-      setError("Unable to load your reward progress right now.");
-      setBalance(0);
-      setRewards([]);
+      setBalance(nextBalance);
+      setRewards(nextRewards);
+      setBranding(nextBranding);
       setIsLoading(false);
-      return;
-    }
-
-    if (rewardsResult.error) {
-      console.error("Unable to load rewards", rewardsResult.error);
+    } catch {
       setError("Unable to load rewards right now.");
       setBalance(0);
       setRewards([]);
       setIsLoading(false);
-      return;
     }
-
-    setBalance(sumTransactions((transactionsResult.data ?? []) as CoinTransaction[]));
-    setRewards((rewardsResult.data ?? []) as Reward[]);
-    setIsLoading(false);
   }, []);
 
   useEffect(() => {
@@ -83,7 +56,7 @@ export default function UserRewardsPage() {
         return;
       }
 
-      void loadRewards(storedEmail.trim().toLowerCase());
+      void loadRewards(normalizeEmail(storedEmail));
     }, 0);
 
     return () => window.clearTimeout(timeoutId);
@@ -93,7 +66,7 @@ export default function UserRewardsPage() {
     <>
       <header className="mb-6">
         <p className="text-sm font-normal uppercase tracking-[0.18em] text-[#D51919]">
-          ZEROMODE Loyalty
+          {branding.app_name}
         </p>
         <h1 className="mt-4 text-4xl font-bold tracking-tight text-[#F5F5F5] sm:text-5xl">
           Rewards
@@ -108,7 +81,7 @@ export default function UserRewardsPage() {
           Current balance
         </p>
         <p className="mt-2 text-3xl font-bold text-[#F5F5F5]">
-          {formatCoins(balance)} Z Coins
+          {formatNumber(balance)} {branding.coin_name}
         </p>
       </section>
 
@@ -156,7 +129,8 @@ export default function UserRewardsPage() {
                   {reward.title}
                 </h2>
                 <p className="mt-3 text-sm font-normal leading-6 text-[#F5F5F5]/60">
-                  {reward.description || `${formatCoins(reward.checkpoint_coins)} Z Coins`}
+                  {reward.description ||
+                    `${formatNumber(reward.checkpoint_coins)} ${branding.coin_name}`}
                 </p>
                 <div className="mt-5 flex flex-wrap items-center gap-2">
                   <span
@@ -169,7 +143,7 @@ export default function UserRewardsPage() {
                     {unlocked ? "Unlocked" : "Locked"}
                   </span>
                   <span className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-normal text-[#F5F5F5]/55">
-                    {formatCoins(reward.checkpoint_coins)} Z Coins
+                    {formatNumber(reward.checkpoint_coins)} {branding.coin_name}
                   </span>
                 </div>
               </article>

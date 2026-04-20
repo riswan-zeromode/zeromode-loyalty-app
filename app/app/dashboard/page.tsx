@@ -2,36 +2,36 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { normalizeEmail } from "@/lib/access";
+import {
+  defaultBranding,
+  getBrandingSettings,
+  type BrandingSettings,
+} from "@/lib/branding";
+import {
+  formatNumber,
+  getActiveRewards,
+  getUserCoinBalance,
+  type Reward,
+} from "@/lib/loyalty-data";
 
-type CoinTransaction = {
-  amount: number | string | null;
-};
-
-type Reward = {
-  id: string | number;
-  title: string;
-  description: string | null;
-  checkpoint_coins: number;
-  reward_type: string | null;
-  is_active: boolean | null;
-};
-
-function formatCoins(value: number) {
-  return new Intl.NumberFormat("en").format(value);
-}
-
-function PageHeader() {
+function PageHeader({
+  appName,
+  coinName,
+}: {
+  appName: string;
+  coinName: string;
+}) {
   return (
     <header className="mb-6">
       <p className="text-sm font-normal uppercase tracking-[0.18em] text-[#D51919]">
-        ZEROMODE Loyalty
+        {appName}
       </p>
       <h1 className="mt-4 text-4xl font-bold tracking-tight text-[#F5F5F5] sm:text-5xl">
         Loyalty Dashboard
       </h1>
       <p className="mt-4 max-w-xl text-base font-normal leading-7 text-[#F5F5F5]/65">
-        Track your Z Coins and rewards
+        Track your {coinName} and rewards
       </p>
     </header>
   );
@@ -40,19 +40,21 @@ function PageHeader() {
 function StatsCard({
   balance,
   nextReward,
+  coinName,
 }: {
   balance: number;
   nextReward: Reward | null;
+  coinName: string;
 }) {
   return (
     <section className="rounded-lg border border-white/10 bg-white/[0.05] p-6">
       <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-sm font-normal uppercase tracking-[0.18em] text-[#D51919]">
-            Z Coins balance
+            {coinName} balance
           </p>
           <p className="mt-3 text-5xl font-bold tracking-tight text-[#F5F5F5]">
-            {formatCoins(balance)}
+            {formatNumber(balance)}
           </p>
         </div>
         <div className="border-t border-white/10 pt-5 sm:border-l sm:border-t-0 sm:pl-8 sm:pt-0">
@@ -61,7 +63,7 @@ function StatsCard({
           </p>
           <p className="mt-2 text-2xl font-bold tracking-tight text-[#F5F5F5]">
             {nextReward
-              ? `${formatCoins(nextReward.checkpoint_coins)} Z Coins`
+              ? `${formatNumber(nextReward.checkpoint_coins)} ${coinName}`
               : "All rewards unlocked"}
           </p>
         </div>
@@ -74,10 +76,12 @@ function ProgressCard({
   balance,
   rewards,
   nextReward,
+  coinName,
 }: {
   balance: number;
   rewards: Reward[];
   nextReward: Reward | null;
+  coinName: string;
 }) {
   const targetCoins = nextReward?.checkpoint_coins ?? balance;
   const progressPercent =
@@ -95,8 +99,8 @@ function ProgressCard({
           </p>
         </div>
         <p className="text-sm font-normal text-[#F5F5F5]/65">
-          {formatCoins(balance)} /{" "}
-          {nextReward ? formatCoins(nextReward.checkpoint_coins) : "Complete"}
+          {formatNumber(balance)} /{" "}
+          {nextReward ? formatNumber(nextReward.checkpoint_coins) : "Complete"}
         </p>
       </div>
 
@@ -111,7 +115,7 @@ function ProgressCard({
           <span>0</span>
           <span>
             {nextReward
-              ? `${formatCoins(nextReward.checkpoint_coins)} Z Coins`
+              ? `${formatNumber(nextReward.checkpoint_coins)} ${coinName}`
               : "Complete"}
           </span>
         </div>
@@ -132,7 +136,7 @@ function ProgressCard({
                 }`}
               />
               <p className="text-lg font-bold tracking-tight text-[#F5F5F5]">
-                {formatCoins(reward.checkpoint_coins)}
+                {formatNumber(reward.checkpoint_coins)}
               </p>
               <p className="mt-1 truncate text-xs font-normal uppercase tracking-[0.16em] text-[#F5F5F5]/45">
                 {reward.title}
@@ -148,9 +152,11 @@ function ProgressCard({
 function RewardsPreview({
   unlockedRewards,
   lockedRewards,
+  coinName,
 }: {
   unlockedRewards: Reward[];
   lockedRewards: Reward[];
+  coinName: string;
 }) {
   return (
     <section className="rounded-lg border border-white/10 bg-white/[0.04] p-6">
@@ -160,7 +166,7 @@ function RewardsPreview({
             Unlocked Rewards
           </h2>
           <p className="mt-2 text-sm font-normal leading-6 text-[#F5F5F5]/60">
-            Rewards available from your current Z Coins balance.
+            Rewards available from your current {coinName} balance.
           </p>
         </div>
         <p className="text-sm font-normal text-[#F5F5F5]/55">
@@ -193,7 +199,7 @@ function RewardsPreview({
         ) : (
           <div className="rounded-lg border border-white/10 bg-white/[0.04] p-5 md:col-span-2">
             <p className="text-sm font-normal leading-6 text-[#F5F5F5]/60">
-              No rewards unlocked yet. Earn more Z Coins to activate your first
+              No rewards unlocked yet. Earn more {coinName} to activate your first
               checkpoint.
             </p>
           </div>
@@ -208,6 +214,8 @@ export default function UserDashboardPage() {
   const [userEmail, setUserEmail] = useState("");
   const [balance, setBalance] = useState(0);
   const [rewards, setRewards] = useState<Reward[]>([]);
+  const [branding, setBranding] =
+    useState<BrandingSettings>(defaultBranding);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -215,45 +223,23 @@ export default function UserDashboardPage() {
     setIsLoading(true);
     setError("");
 
-    const [transactionsResult, rewardsResult] = await Promise.all([
-      supabase
-        .from("coin_transactions")
-        .select("amount")
-        .eq("user_email", email),
-      supabase
-        .from("rewards")
-        .select("id, title, description, checkpoint_coins, reward_type, is_active")
-        .eq("is_active", true)
-        .order("checkpoint_coins", { ascending: true }),
-    ]);
+    try {
+      const [nextBalance, nextRewards, nextBranding] = await Promise.all([
+        getUserCoinBalance(email),
+        getActiveRewards(),
+        getBrandingSettings(),
+      ]);
 
-    if (transactionsResult.error) {
-      console.error("Unable to load coin transactions", transactionsResult.error);
-      setError("Unable to load your coin balance right now.");
+      setBalance(nextBalance);
+      setRewards(nextRewards);
+      setBranding(nextBranding);
+      setIsLoading(false);
+    } catch {
+      setError("Unable to load your loyalty dashboard right now.");
       setBalance(0);
       setRewards([]);
       setIsLoading(false);
-      return;
     }
-
-    if (rewardsResult.error) {
-      console.error("Unable to load rewards", rewardsResult.error);
-      setError("Unable to load rewards right now.");
-      setBalance(0);
-      setRewards([]);
-      setIsLoading(false);
-      return;
-    }
-
-    const transactionRows = (transactionsResult.data ?? []) as CoinTransaction[];
-    const nextBalance = transactionRows.reduce((total, transaction) => {
-      const amount = Number(transaction.amount ?? 0);
-      return Number.isFinite(amount) ? total + amount : total;
-    }, 0);
-
-    setBalance(nextBalance);
-    setRewards((rewardsResult.data ?? []) as Reward[]);
-    setIsLoading(false);
   }, []);
 
   useEffect(() => {
@@ -265,8 +251,9 @@ export default function UserDashboardPage() {
         return;
       }
 
-      setUserEmail(storedEmail);
-      void loadDashboard(storedEmail);
+      const normalizedEmail = normalizeEmail(storedEmail);
+      setUserEmail(normalizedEmail);
+      void loadDashboard(normalizedEmail);
     }, 0);
 
     return () => window.clearTimeout(timeoutId);
@@ -283,7 +270,7 @@ export default function UserDashboardPage() {
 
   return (
     <>
-      <PageHeader />
+      <PageHeader appName={branding.app_name} coinName={branding.coin_name} />
 
       {userEmail ? (
         <p className="mb-5 text-sm font-normal text-[#F5F5F5]/45">
@@ -307,15 +294,21 @@ export default function UserDashboardPage() {
 
       {!isLoading && !error ? (
         <div className="space-y-5">
-          <StatsCard balance={balance} nextReward={nextReward} />
+          <StatsCard
+            balance={balance}
+            nextReward={nextReward}
+            coinName={branding.coin_name}
+          />
           <ProgressCard
             balance={balance}
             rewards={rewards}
             nextReward={nextReward}
+            coinName={branding.coin_name}
           />
           <RewardsPreview
             unlockedRewards={unlockedRewards}
             lockedRewards={lockedRewards}
+            coinName={branding.coin_name}
           />
         </div>
       ) : null}

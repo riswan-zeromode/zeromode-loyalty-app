@@ -2,45 +2,24 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
-
-type CoinTransaction = {
-  user_email: string | null;
-  amount: number | string | null;
-};
-
-type LeaderboardRow = {
-  user_email: string;
-  totalCoins: number;
-};
-
-function formatCoins(value: number) {
-  return new Intl.NumberFormat("en").format(value);
-}
-
-function buildLeaderboard(transactions: CoinTransaction[]) {
-  const totals = new Map<string, number>();
-
-  for (const transaction of transactions) {
-    const email = transaction.user_email?.trim().toLowerCase();
-    const amount = Number(transaction.amount ?? 0);
-
-    if (!email || !Number.isFinite(amount)) {
-      continue;
-    }
-
-    totals.set(email, (totals.get(email) ?? 0) + amount);
-  }
-
-  return Array.from(totals.entries())
-    .map(([user_email, totalCoins]) => ({ user_email, totalCoins }))
-    .sort((firstUser, secondUser) => secondUser.totalCoins - firstUser.totalCoins);
-}
+import { normalizeEmail } from "@/lib/access";
+import {
+  defaultBranding,
+  getBrandingSettings,
+  type BrandingSettings,
+} from "@/lib/branding";
+import {
+  formatNumber,
+  getLeaderboardRows,
+  type LeaderboardRow,
+} from "@/lib/loyalty-data";
 
 export default function UserLeaderboardPage() {
   const router = useRouter();
   const [userEmail, setUserEmail] = useState("");
   const [leaderboard, setLeaderboard] = useState<LeaderboardRow[]>([]);
+  const [branding, setBranding] =
+    useState<BrandingSettings>(defaultBranding);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -48,20 +27,20 @@ export default function UserLeaderboardPage() {
     setIsLoading(true);
     setError("");
 
-    const { data, error: transactionsError } = await supabase
-      .from("coin_transactions")
-      .select("user_email, amount");
+    try {
+      const [nextLeaderboard, nextBranding] = await Promise.all([
+        getLeaderboardRows(),
+        getBrandingSettings(),
+      ]);
 
-    if (transactionsError) {
-      console.error("Unable to load leaderboard", transactionsError);
+      setLeaderboard(nextLeaderboard);
+      setBranding(nextBranding);
+      setIsLoading(false);
+    } catch {
       setError("Unable to load leaderboard right now.");
       setLeaderboard([]);
       setIsLoading(false);
-      return;
     }
-
-    setLeaderboard(buildLeaderboard((data ?? []) as CoinTransaction[]));
-    setIsLoading(false);
   }, []);
 
   useEffect(() => {
@@ -73,7 +52,7 @@ export default function UserLeaderboardPage() {
         return;
       }
 
-      setUserEmail(storedEmail.trim().toLowerCase());
+      setUserEmail(normalizeEmail(storedEmail));
       void loadLeaderboard();
     }, 0);
 
@@ -84,13 +63,13 @@ export default function UserLeaderboardPage() {
     <>
       <header className="mb-6">
         <p className="text-sm font-normal uppercase tracking-[0.18em] text-[#D51919]">
-          ZEROMODE Loyalty
+          {branding.app_name}
         </p>
         <h1 className="mt-4 text-4xl font-bold tracking-tight text-[#F5F5F5] sm:text-5xl">
           Leaderboard
         </h1>
         <p className="mt-4 max-w-xl text-base font-normal leading-7 text-[#F5F5F5]/65">
-          Top Z Coin earners this cycle.
+          Top {branding.coin_name} earners this cycle.
         </p>
       </header>
 
@@ -115,8 +94,8 @@ export default function UserLeaderboardPage() {
               No leaderboard activity yet
             </h2>
             <p className="mx-auto mt-2 max-w-md text-sm font-normal leading-6 text-[#F5F5F5]/60">
-              Coin transactions will appear here once users start earning Z
-              Coins.
+              Coin transactions will appear here once users start earning{" "}
+              {branding.coin_name}.
             </p>
           </div>
         ) : null}
@@ -155,7 +134,7 @@ export default function UserLeaderboardPage() {
                     </div>
                   </div>
                   <p className="shrink-0 text-sm font-normal">
-                    {formatCoins(user.totalCoins)} Z Coins
+                    {formatNumber(user.totalCoins)} {branding.coin_name}
                   </p>
                 </div>
               );

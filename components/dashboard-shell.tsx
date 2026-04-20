@@ -2,7 +2,14 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import type { CSSProperties } from "react";
 import { useEffect, useState } from "react";
+import {
+  brandingSettingsUpdatedEvent,
+  defaultBranding,
+  getBrandingSettings,
+  type BrandingSettings,
+} from "@/lib/branding";
 
 const userEmailStorageKey = "userEmail";
 
@@ -27,6 +34,8 @@ export function DashboardShell({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const [hasCheckedSession, setHasCheckedSession] = useState(false);
+  const [branding, setBranding] =
+    useState<BrandingSettings>(defaultBranding);
 
   useEffect(() => {
     const storedEmail = localStorage.getItem(userEmailStorageKey);
@@ -44,6 +53,26 @@ export function DashboardShell({
     return () => window.clearTimeout(timeoutId);
   }, [router]);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadBranding() {
+      const nextBranding = await getBrandingSettings();
+
+      if (isMounted) {
+        setBranding(nextBranding);
+      }
+    }
+
+    void loadBranding();
+    window.addEventListener(brandingSettingsUpdatedEvent, loadBranding);
+
+    return () => {
+      isMounted = false;
+      window.removeEventListener(brandingSettingsUpdatedEvent, loadBranding);
+    };
+  }, []);
+
   function handleSignOut() {
     localStorage.removeItem(userEmailStorageKey);
     router.replace("/login");
@@ -59,8 +88,23 @@ export function DashboardShell({
     );
   }
 
+  const accentStyle = { color: branding.accent_color };
+  const shellStyle = {
+    "--brand-bg": branding.bg_color,
+    "--brand-text": branding.text_color,
+    "--brand-accent": branding.accent_color,
+    backgroundColor: branding.bg_color,
+    color: branding.text_color,
+  } as CSSProperties;
+  const displayLabel = label.toLowerCase().includes("admin")
+    ? `${branding.app_name} Admin`
+    : branding.app_name;
+
   return (
-    <div className="min-h-screen bg-[#121212] font-sans text-[#F5F5F5]">
+    <div
+      className="min-h-screen bg-[var(--brand-bg)] font-sans text-[var(--brand-text)]"
+      style={shellStyle}
+    >
       {isMenuOpen ? (
         <button
           type="button"
@@ -76,10 +120,30 @@ export function DashboardShell({
         }`}
       >
         <div className="px-2 pb-6">
-          <p className="text-xs font-normal uppercase tracking-[0.18em] text-[#D51919]">
-            {label}
-          </p>
-          <p className="mt-3 text-lg font-bold tracking-tight text-[#F5F5F5]">
+          <div className="mb-4 flex items-center gap-3">
+            {branding.logo_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={branding.logo_url}
+                alt={`${branding.app_name} logo`}
+                className="h-9 w-9 rounded-lg object-cover"
+              />
+            ) : (
+              <span
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-sm font-bold text-[#F5F5F5]"
+                style={{ backgroundColor: branding.accent_color }}
+              >
+                Z
+              </span>
+            )}
+            <p
+              className="text-xs font-normal uppercase tracking-[0.18em]"
+              style={accentStyle}
+            >
+              {displayLabel}
+            </p>
+          </div>
+          <p className="mt-3 text-lg font-bold tracking-tight">
             {title}
           </p>
         </div>
@@ -95,9 +159,10 @@ export function DashboardShell({
                 onClick={() => setIsMenuOpen(false)}
                 className={`block rounded-lg px-3 py-3 text-sm transition ${
                   isActive
-                    ? "bg-[#D51919] font-bold text-[#F5F5F5]"
+                    ? "font-bold text-[#F5F5F5]"
                     : "font-normal text-[#F5F5F5]/65 hover:bg-white/[0.06] hover:text-[#F5F5F5]"
                 }`}
+                style={isActive ? { backgroundColor: branding.accent_color } : undefined}
               >
                 {link.label}
               </Link>
@@ -123,7 +188,10 @@ export function DashboardShell({
       </aside>
 
       <div className="min-w-0">
-        <header className="sticky top-0 z-20 border-b border-white/10 bg-[#121212]/95 px-5 py-4 backdrop-blur sm:px-8 lg:px-10">
+        <header
+          className="sticky top-0 z-20 border-b border-white/10 px-5 py-4 backdrop-blur sm:px-8 lg:px-10"
+          style={{ backgroundColor: branding.bg_color }}
+        >
           <div className="mx-auto flex w-full max-w-7xl items-center gap-3">
             <div className="flex items-center gap-3">
               <button
@@ -141,8 +209,11 @@ export function DashboardShell({
                   <span className="h-px w-full bg-current" />
                 </span>
               </button>
-              <p className="text-sm font-normal uppercase tracking-[0.18em] text-[#D51919]">
-                {label}
+              <p
+                className="text-sm font-normal uppercase tracking-[0.18em]"
+                style={accentStyle}
+              >
+                {displayLabel}
               </p>
             </div>
           </div>

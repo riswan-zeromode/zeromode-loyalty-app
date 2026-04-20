@@ -1,17 +1,24 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import {
+  defaultBranding,
+  getBrandingSettings,
+  type BrandingSettings,
+} from "@/lib/branding";
+import { formatNumber, getTotalCoinsIssued } from "@/lib/loyalty-data";
 import { supabase } from "@/lib/supabase";
-
-type CoinTransaction = {
-  amount: number | string | null;
-};
 
 type AdminOverviewStats = {
   approvedUsers: number;
   admins: number;
   activeRewards: number;
   totalCoinsIssued: number;
+};
+
+type CountResult = {
+  count: number | null;
+  error: unknown | null;
 };
 
 const emptyStats: AdminOverviewStats = {
@@ -21,19 +28,10 @@ const emptyStats: AdminOverviewStats = {
   totalCoinsIssued: 0,
 };
 
-function formatNumber(value: number) {
-  return new Intl.NumberFormat("en").format(value);
-}
-
-function sumTransactions(transactions: CoinTransaction[]) {
-  return transactions.reduce((total, transaction) => {
-    const amount = Number(transaction.amount ?? 0);
-    return Number.isFinite(amount) ? total + amount : total;
-  }, 0);
-}
-
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<AdminOverviewStats>(emptyStats);
+  const [branding, setBranding] =
+    useState<BrandingSettings>(defaultBranding);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -41,23 +39,38 @@ export default function AdminDashboardPage() {
     setIsLoading(true);
     setError("");
 
-    const [
-      approvedUsersResult,
-      adminsResult,
-      activeRewardsResult,
-      coinTransactionsResult,
-    ] = await Promise.all([
-      supabase
-        .from("approved_users")
-        .select("id", { count: "exact", head: true })
-        .eq("status", "approved"),
-      supabase.from("admins").select("id", { count: "exact", head: true }),
-      supabase
-        .from("rewards")
-        .select("id", { count: "exact", head: true })
-        .eq("is_active", true),
-      supabase.from("coin_transactions").select("amount"),
-    ]);
+    let approvedUsersResult: CountResult = { count: null, error: null };
+    let adminsResult: CountResult = { count: null, error: null };
+    let activeRewardsResult: CountResult = { count: null, error: null };
+    let totalCoinsIssued = 0;
+    let nextBranding: BrandingSettings = defaultBranding;
+
+    try {
+      const overviewData = await Promise.all([
+        supabase
+          .from("approved_users")
+          .select("*", { count: "exact", head: true })
+          .eq("status", "approved"),
+        supabase.from("admins").select("*", { count: "exact", head: true }),
+        supabase
+          .from("rewards")
+          .select("*", { count: "exact", head: true })
+          .eq("is_active", true),
+        getTotalCoinsIssued(),
+        getBrandingSettings(),
+      ]);
+
+      approvedUsersResult = overviewData[0] as CountResult;
+      adminsResult = overviewData[1] as CountResult;
+      activeRewardsResult = overviewData[2] as CountResult;
+      totalCoinsIssued = overviewData[3];
+      nextBranding = overviewData[4];
+    } catch {
+      setError("Unable to load admin overview right now.");
+      setStats(emptyStats);
+      setIsLoading(false);
+      return;
+    }
 
     if (approvedUsersResult.error) {
       console.error("Unable to load approved users count", approvedUsersResult.error);
@@ -83,25 +96,13 @@ export default function AdminDashboardPage() {
       return;
     }
 
-    if (coinTransactionsResult.error) {
-      console.error(
-        "Unable to load total coins issued",
-        coinTransactionsResult.error,
-      );
-      setError("Unable to load admin overview right now.");
-      setStats(emptyStats);
-      setIsLoading(false);
-      return;
-    }
-
     setStats({
       approvedUsers: approvedUsersResult.count ?? 0,
       admins: adminsResult.count ?? 0,
       activeRewards: activeRewardsResult.count ?? 0,
-      totalCoinsIssued: sumTransactions(
-        (coinTransactionsResult.data ?? []) as CoinTransaction[],
-      ),
+      totalCoinsIssued,
     });
+    setBranding(nextBranding);
     setIsLoading(false);
   }, []);
 
@@ -118,7 +119,7 @@ export default function AdminDashboardPage() {
     { label: "Admins", value: formatNumber(stats.admins) },
     { label: "Active Rewards", value: formatNumber(stats.activeRewards) },
     {
-      label: "Total Z Coins Issued",
+      label: `Total ${branding.coin_name} Issued`,
       value: formatNumber(stats.totalCoinsIssued),
     },
   ];
@@ -127,7 +128,7 @@ export default function AdminDashboardPage() {
     <>
       <header className="mb-6">
         <p className="text-sm font-normal uppercase tracking-[0.18em] text-[#D51919]">
-          ZEROMODE ADMIN
+          {branding.app_name} ADMIN
         </p>
         <h1 className="mt-4 text-4xl font-bold tracking-tight text-[#F5F5F5] sm:text-5xl">
           Admin Control Panel

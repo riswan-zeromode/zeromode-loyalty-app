@@ -2,6 +2,7 @@
 
 import type { ChangeEvent, FormEvent } from "react";
 import { useCallback, useEffect, useState } from "react";
+import { brandingSettingsUpdatedEvent } from "@/lib/branding";
 import { supabase } from "@/lib/supabase";
 
 type BrandingSettings = {
@@ -181,6 +182,7 @@ export default function AdminSettingsPage() {
     setLogoPreviewUrl(savedSettings.logo_url ?? publicUrl);
     setNotice("Logo uploaded and saved.");
     setIsUploadingLogo(false);
+    window.dispatchEvent(new Event(brandingSettingsUpdatedEvent));
   }
 
   async function handleSaveSettings(event: FormEvent<HTMLFormElement>) {
@@ -204,6 +206,7 @@ export default function AdminSettingsPage() {
     setLogoPreviewUrl(savedSettings.logo_url ?? "");
     setNotice("Branding settings saved.");
     setIsSaving(false);
+    window.dispatchEvent(new Event(brandingSettingsUpdatedEvent));
   }
 
   return (
