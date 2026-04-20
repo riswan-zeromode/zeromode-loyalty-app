@@ -84,7 +84,7 @@ export function DashboardShell({
           </p>
         </div>
 
-        <nav className="space-y-2">
+        <nav className="flex-1 space-y-2 overflow-y-auto">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
 
@@ -104,11 +104,27 @@ export function DashboardShell({
             );
           })}
         </nav>
+
+        <div className="mt-6 rounded-lg border border-white/10 bg-white/[0.05] p-4">
+          <p className="text-xs font-normal uppercase tracking-[0.16em] text-[#F5F5F5]/45">
+            Signed in as
+          </p>
+          <p className="mt-2 truncate text-sm font-normal text-[#F5F5F5]">
+            {userEmail}
+          </p>
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="mt-4 h-9 w-full rounded-lg border border-white/10 bg-white/[0.06] px-4 text-sm font-normal text-[#F5F5F5] transition hover:border-[#D51919]/60 hover:bg-[#D51919]/15 focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#151515]"
+          >
+            Sign out
+          </button>
+        </div>
       </aside>
 
       <div className="min-w-0">
         <header className="sticky top-0 z-20 border-b border-white/10 bg-[#121212]/95 px-5 py-4 backdrop-blur sm:px-8 lg:px-10">
-          <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mx-auto flex w-full max-w-7xl items-center gap-3">
             <div className="flex items-center gap-3">
               <button
                 type="button"
@@ -128,24 +144,6 @@ export function DashboardShell({
               <p className="text-sm font-normal uppercase tracking-[0.18em] text-[#D51919]">
                 {label}
               </p>
-            </div>
-
-            <div className="flex flex-col gap-3 rounded-lg border border-white/10 bg-white/[0.05] px-4 py-3 text-left sm:flex-row sm:items-center sm:justify-between sm:text-right">
-              <div className="min-w-0">
-                <p className="text-xs font-normal uppercase tracking-[0.16em] text-[#F5F5F5]/45">
-                  Signed in as
-                </p>
-                <p className="mt-1 max-w-[260px] truncate text-sm font-normal text-[#F5F5F5]">
-                  {userEmail}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={handleSignOut}
-                className="h-9 shrink-0 rounded-lg border border-white/10 bg-white/[0.06] px-4 text-sm font-normal text-[#F5F5F5] transition hover:border-[#D51919]/60 hover:bg-[#D51919]/15 focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#121212]"
-              >
-                Sign out
-              </button>
             </div>
           </div>
         </header>
