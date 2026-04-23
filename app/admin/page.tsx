@@ -6,6 +6,7 @@ import {
   getBrandingSettings,
   type BrandingSettings,
 } from "@/lib/branding";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { formatNumber, getTotalCoinsIssued } from "@/lib/loyalty-data";
 import { supabase } from "@/lib/supabase";
 import { getErrorMessage, logSupabaseError } from "@/lib/supabase-errors";
@@ -143,16 +144,21 @@ export default function AdminDashboardPage() {
 
   return (
     <>
-      <header className="mb-6">
-        <p className="text-sm font-normal uppercase tracking-[0.18em] text-[#D51919]">
-          {branding.app_name} ADMIN
-        </p>
-        <h1 className="mt-4 text-4xl font-bold tracking-tight text-[var(--brand-text)] sm:text-5xl">
-          Admin Control Panel
-        </h1>
-        <p className="mt-4 max-w-2xl text-base font-normal leading-7 text-[color:var(--brand-muted)]">
-          Manage loyalty access, rewards, and settings
-        </p>
+      <header className="mb-6 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p className="text-sm font-normal uppercase tracking-[0.18em] text-[#D51919]">
+            {branding.app_name} ADMIN
+          </p>
+          <h1 className="mt-4 text-4xl font-bold tracking-tight text-[var(--brand-text)] sm:text-5xl">
+            Admin Control Panel
+          </h1>
+          <p className="mt-4 max-w-2xl text-base font-normal leading-7 text-[color:var(--brand-muted)]">
+            Manage loyalty access, rewards, and settings
+          </p>
+        </div>
+        <div className="sm:pt-1">
+          <ThemeToggle />
+        </div>
       </header>
 
       {isLoading ? (

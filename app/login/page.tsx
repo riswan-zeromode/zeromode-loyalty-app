@@ -7,16 +7,24 @@ import { useRouter } from "next/navigation";
 import { getUserRoleByEmail, normalizeEmail } from "@/lib/access";
 import {
   defaultBranding,
-  getThemeVariables,
   getBrandingSettings,
   type BrandingSettings,
 } from "@/lib/branding";
+import {
+  defaultThemeMode,
+  getStoredThemeMode,
+  getThemeVariables,
+  themeModeChangedEvent,
+  themeModes,
+  type ThemeMode,
+} from "@/lib/theme";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [themeMode, setThemeMode] = useState<ThemeMode>(defaultThemeMode);
   const [branding, setBranding] =
     useState<BrandingSettings>(defaultBranding);
 
@@ -35,6 +43,21 @@ export default function LoginPage() {
 
     return () => {
       isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    function syncThemeMode() {
+      setThemeMode(getStoredThemeMode());
+    }
+
+    syncThemeMode();
+    window.addEventListener(themeModeChangedEvent, syncThemeMode);
+    window.addEventListener("storage", syncThemeMode);
+
+    return () => {
+      window.removeEventListener(themeModeChangedEvent, syncThemeMode);
+      window.removeEventListener("storage", syncThemeMode);
     };
   }, []);
 
@@ -69,11 +92,11 @@ export default function LoginPage() {
     <main
       className="flex min-h-screen items-center justify-center px-6 py-12 font-sans"
       style={{
-        ...getThemeVariables(branding),
-        backgroundColor: branding.bg_color,
-        color: branding.text_color,
+        ...getThemeVariables(themeMode, branding.accent_color),
+        backgroundColor: themeModes[themeMode].bg_color,
+        color: themeModes[themeMode].text_color,
       } as CSSProperties}
-      data-theme={branding.theme_mode}
+      data-theme={themeMode}
     >
       <section className="w-full max-w-md">
         <div className="mb-9 text-center">

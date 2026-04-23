@@ -2,31 +2,21 @@
 
 import type { ChangeEvent, FormEvent } from "react";
 import { useCallback, useEffect, useState } from "react";
-import {
-  brandingSettingsUpdatedEvent,
-  themeModes,
-  type ThemeMode,
-} from "@/lib/branding";
+import { brandingSettingsUpdatedEvent } from "@/lib/branding";
 import { supabase } from "@/lib/supabase";
 
 type BrandingSettings = {
   id: string | number;
   app_name: string | null;
   logo_url: string | null;
-  bg_color: string | null;
-  text_color: string | null;
   accent_color: string | null;
   coin_name: string | null;
-  theme_mode: string | null;
 };
 
 type BrandingDraft = {
   app_name: string;
-  bg_color: string;
-  text_color: string;
   accent_color: string;
   coin_name: string;
-  theme_mode: ThemeMode;
 };
 
 type BrandingPayload = BrandingDraft & {
@@ -35,23 +25,15 @@ type BrandingPayload = BrandingDraft & {
 
 const defaultBranding: BrandingDraft = {
   app_name: "ZEROMODE Loyalty",
-  bg_color: themeModes.light.bg_color,
-  text_color: themeModes.light.text_color,
   accent_color: "#D51919",
   coin_name: "Z Coins",
-  theme_mode: "light",
 };
 
 function getDraftFromSettings(settings: BrandingSettings | null): BrandingDraft {
-  const themeMode: ThemeMode = settings?.theme_mode === "dark" ? "dark" : "light";
-
   return {
     app_name: settings?.app_name ?? defaultBranding.app_name,
-    bg_color: themeModes[themeMode].bg_color,
-    text_color: themeModes[themeMode].text_color,
     accent_color: settings?.accent_color ?? defaultBranding.accent_color,
     coin_name: settings?.coin_name ?? defaultBranding.coin_name,
-    theme_mode: themeMode,
   };
 }
 
@@ -79,7 +61,7 @@ export default function AdminSettingsPage() {
 
     const { data, error: settingsError } = await supabase
       .from("branding_settings")
-      .select("id, app_name, logo_url, bg_color, text_color, accent_color, coin_name, theme_mode")
+      .select("id, app_name, logo_url, accent_color, coin_name")
       .limit(1)
       .maybeSingle();
 
@@ -108,15 +90,10 @@ export default function AdminSettingsPage() {
   }, [loadBranding]);
 
   function getBrandingPayload(logoUrl: string | null): BrandingPayload {
-    const themeColors = themeModes[draft.theme_mode];
-
     return {
       app_name: draft.app_name.trim() || defaultBranding.app_name,
-      bg_color: themeColors.bg_color,
-      text_color: themeColors.text_color,
       accent_color: draft.accent_color.trim() || defaultBranding.accent_color,
       coin_name: draft.coin_name.trim() || defaultBranding.coin_name,
-      theme_mode: draft.theme_mode,
       logo_url: logoUrl,
     };
   }
@@ -131,7 +108,7 @@ export default function AdminSettingsPage() {
 
     const { data, error: saveError } = await saveRequest
       .select(
-        "id, app_name, logo_url, bg_color, text_color, accent_color, coin_name, theme_mode",
+        "id, app_name, logo_url, accent_color, coin_name",
       )
       .maybeSingle();
 
@@ -296,64 +273,13 @@ export default function AdminSettingsPage() {
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-              <div className="rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] p-4 sm:col-span-2 xl:col-span-3">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <p className="text-xs font-normal uppercase tracking-[0.16em] text-[color:var(--brand-muted)]">
-                      Theme Mode
-                    </p>
-                    <p className="mt-2 text-sm font-normal leading-6 text-[color:var(--brand-muted)]">
-                      Controls the global background and text colors for admins
-                      and members.
-                    </p>
-                  </div>
-
-                  <button
-                    type="button"
-                    aria-pressed={draft.theme_mode === "dark"}
-                    onClick={() => {
-                      setDraft((currentDraft) => {
-                        const nextThemeMode =
-                          currentDraft.theme_mode === "dark" ? "light" : "dark";
-                        const nextThemeColors = themeModes[nextThemeMode];
-
-                        return {
-                          ...currentDraft,
-                          theme_mode: nextThemeMode,
-                          bg_color: nextThemeColors.bg_color,
-                          text_color: nextThemeColors.text_color,
-                        };
-                      });
-                      setError("");
-                      setNotice("");
-                    }}
-                    className="flex h-11 w-full items-center justify-between rounded-lg border border-[var(--brand-border)] bg-[var(--brand-field)] px-2 text-sm font-normal text-[var(--brand-text)] transition hover:border-[#D51919]/60 focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[var(--brand-bg)] sm:w-56"
-                  >
-                    <span className="px-3">
-                      {draft.theme_mode === "dark" ? "Dark" : "Light"}
-                    </span>
-                    <span
-                      className={`flex h-8 w-20 items-center rounded-lg p-1 transition ${
-                        draft.theme_mode === "dark"
-                          ? "justify-end bg-[#D51919]"
-                          : "justify-start bg-[var(--brand-soft)]"
-                      }`}
-                    >
-                      <span className="h-6 w-8 rounded-md bg-white shadow-sm" />
-                    </span>
-                  </button>
-                </div>
-              </div>
-
               {(
                 [
-                  ["app_name", "App Name", false],
-                  ["bg_color", "Background Color", true],
-                  ["text_color", "Text Color", true],
-                  ["accent_color", "Accent Color", false],
-                  ["coin_name", "Coin Name", false],
+                  ["app_name", "App Name"],
+                  ["accent_color", "Accent Color"],
+                  ["coin_name", "Coin Name"],
                 ] as const
-              ).map(([field, label, isReadOnly]) => (
+              ).map(([field, label]) => (
                 <label
                   key={field}
                   className="rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] p-4"
@@ -364,12 +290,7 @@ export default function AdminSettingsPage() {
                   <input
                     type="text"
                     value={draft[field]}
-                    readOnly={isReadOnly}
                     onChange={(event) => {
-                      if (isReadOnly) {
-                        return;
-                      }
-
                       setDraft((currentDraft) => ({
                         ...currentDraft,
                         [field]: event.target.value,
@@ -377,7 +298,7 @@ export default function AdminSettingsPage() {
                       setError("");
                       setNotice("");
                     }}
-                    className="mt-2 h-10 w-full rounded-lg border border-[var(--brand-border)] bg-[var(--brand-field)] px-3 text-sm font-normal text-[var(--brand-text)] outline-none transition placeholder:text-[color:var(--brand-placeholder)] focus:border-[#D51919] focus:bg-[var(--brand-field-focus)] focus:ring-2 focus:ring-[#D51919]/35 read-only:cursor-default read-only:opacity-75"
+                    className="mt-2 h-10 w-full rounded-lg border border-[var(--brand-border)] bg-[var(--brand-field)] px-3 text-sm font-normal text-[var(--brand-text)] outline-none transition placeholder:text-[color:var(--brand-placeholder)] focus:border-[#D51919] focus:bg-[var(--brand-field-focus)] focus:ring-2 focus:ring-[#D51919]/35"
                   />
                 </label>
               ))}

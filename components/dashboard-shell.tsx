@@ -7,11 +7,18 @@ import { useEffect, useState } from "react";
 import {
   brandingSettingsUpdatedEvent,
   defaultBranding,
-  getThemeVariables,
   getBrandingSettings,
   type BrandingSettings,
 } from "@/lib/branding";
 import { getUserRoleByEmail, normalizeEmail, type UserRole } from "@/lib/access";
+import {
+  defaultThemeMode,
+  getStoredThemeMode,
+  getThemeVariables,
+  themeModeChangedEvent,
+  themeModes,
+  type ThemeMode,
+} from "@/lib/theme";
 
 const userEmailStorageKey = "userEmail";
 
@@ -38,6 +45,7 @@ export function DashboardShell({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const [hasCheckedSession, setHasCheckedSession] = useState(false);
+  const [themeMode, setThemeMode] = useState<ThemeMode>(defaultThemeMode);
   const [branding, setBranding] =
     useState<BrandingSettings>(defaultBranding);
 
@@ -93,6 +101,21 @@ export function DashboardShell({
     };
   }, []);
 
+  useEffect(() => {
+    function syncThemeMode() {
+      setThemeMode(getStoredThemeMode());
+    }
+
+    syncThemeMode();
+    window.addEventListener(themeModeChangedEvent, syncThemeMode);
+    window.addEventListener("storage", syncThemeMode);
+
+    return () => {
+      window.removeEventListener(themeModeChangedEvent, syncThemeMode);
+      window.removeEventListener("storage", syncThemeMode);
+    };
+  }, []);
+
   function handleSignOut() {
     localStorage.removeItem(userEmailStorageKey);
     router.replace("/login");
@@ -102,7 +125,12 @@ export function DashboardShell({
     return (
       <main
         className="flex min-h-screen items-center justify-center bg-[var(--brand-bg)] px-6 py-12 font-sans text-[var(--brand-text)]"
-        style={getThemeVariables(defaultBranding) as CSSProperties}
+        style={
+          getThemeVariables(
+            defaultThemeMode,
+            defaultBranding.accent_color,
+          ) as CSSProperties
+        }
       >
         <p className="text-sm font-normal text-[color:var(--brand-muted)]">
           Checking access...
@@ -112,10 +140,11 @@ export function DashboardShell({
   }
 
   const accentStyle = { color: branding.accent_color };
+  const themeColors = themeModes[themeMode];
   const shellStyle = {
-    ...getThemeVariables(branding),
-    backgroundColor: branding.bg_color,
-    color: branding.text_color,
+    ...getThemeVariables(themeMode, branding.accent_color),
+    backgroundColor: themeColors.bg_color,
+    color: themeColors.text_color,
   } as CSSProperties;
   const displayLabel = label.toLowerCase().includes("admin")
     ? `${branding.app_name} Admin`
@@ -124,7 +153,7 @@ export function DashboardShell({
   return (
     <div
       className="min-h-screen bg-[var(--brand-bg)] font-sans text-[var(--brand-text)]"
-      data-theme={branding.theme_mode}
+      data-theme={themeMode}
       style={shellStyle}
     >
       {isMenuOpen ? (
@@ -212,7 +241,7 @@ export function DashboardShell({
       <div className="min-w-0">
         <header
           className="sticky top-0 z-20 border-b border-[var(--brand-border)] px-5 py-4 backdrop-blur sm:px-8 lg:px-10"
-          style={{ backgroundColor: branding.bg_color }}
+          style={{ backgroundColor: "var(--brand-bg)" }}
         >
           <div className="mx-auto flex w-full max-w-7xl items-center gap-3">
             <div className="flex items-center gap-3">
