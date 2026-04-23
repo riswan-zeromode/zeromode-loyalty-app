@@ -72,26 +72,26 @@ export default function UserRewardsPage() {
         <p className="text-sm font-normal uppercase tracking-[0.18em] text-[#D51919]">
           {branding.app_name}
         </p>
-        <h1 className="mt-4 text-4xl font-bold tracking-tight text-[#121212] sm:text-5xl">
+        <h1 className="mt-4 text-4xl font-bold tracking-tight text-[var(--brand-text)] sm:text-5xl">
           Rewards
         </h1>
-        <p className="mt-4 max-w-xl text-base font-normal leading-7 text-[#121212]/65">
+        <p className="mt-4 max-w-xl text-base font-normal leading-7 text-[color:var(--brand-muted)]">
           View available loyalty perks and unlock status.
         </p>
       </header>
 
-      <section className="mb-5 rounded-lg border border-black/10 bg-black/[0.04] p-5">
+      <section className="mb-5 rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] p-5">
         <p className="text-sm font-normal uppercase tracking-[0.18em] text-[#D51919]">
           Current balance
         </p>
-        <p className="mt-2 text-3xl font-bold text-[#121212]">
+        <p className="mt-2 text-3xl font-bold text-[var(--brand-text)]">
           {formatNumber(balance)} {branding.coin_name}
         </p>
       </section>
 
       {isLoading ? (
-        <section className="rounded-lg border border-black/10 bg-black/[0.04] p-6">
-          <p className="text-sm font-normal text-[#121212]/60">
+        <section className="rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] p-6">
+          <p className="text-sm font-normal text-[color:var(--brand-muted)]">
             Loading rewards...
           </p>
         </section>
@@ -99,16 +99,16 @@ export default function UserRewardsPage() {
 
       {!isLoading && error ? (
         <section className="rounded-lg border border-[#D51919]/35 bg-[#D51919]/10 p-6">
-          <p className="text-sm font-normal text-[#121212]">{error}</p>
+          <p className="text-sm font-normal text-[var(--brand-text)]">{error}</p>
         </section>
       ) : null}
 
       {!isLoading && !error && rewards.length === 0 ? (
-        <section className="rounded-lg border border-black/10 bg-black/[0.04] p-8 text-center">
-          <h2 className="text-lg font-bold text-[#121212]">
+        <section className="rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] p-8 text-center">
+          <h2 className="text-lg font-bold text-[var(--brand-text)]">
             No rewards available yet
           </h2>
-          <p className="mx-auto mt-2 max-w-md text-sm font-normal leading-6 text-[#121212]/60">
+          <p className="mx-auto mt-2 max-w-md text-sm font-normal leading-6 text-[color:var(--brand-muted)]">
             Active rewards from Supabase will appear here once admins publish
             them.
           </p>
@@ -126,13 +126,13 @@ export default function UserRewardsPage() {
                 className={`rounded-lg border p-5 ${
                   unlocked
                     ? "border-[#D51919]/45 bg-[#D51919]/10"
-                    : "border-black/10 bg-black/[0.04]"
+                    : "border-[var(--brand-border)] bg-[var(--brand-surface)]"
                 }`}
               >
-                <h2 className="text-base font-bold text-[#121212]">
+                <h2 className="text-base font-bold text-[var(--brand-text)]">
                   {reward.title}
                 </h2>
-                <p className="mt-3 text-sm font-normal leading-6 text-[#121212]/60">
+                <p className="mt-3 text-sm font-normal leading-6 text-[color:var(--brand-muted)]">
                   {reward.description ||
                     `${formatNumber(reward.checkpoint_coins)} ${branding.coin_name}`}
                 </p>
@@ -141,12 +141,12 @@ export default function UserRewardsPage() {
                     className={`inline-flex rounded-full px-3 py-1 text-xs font-normal ${
                       unlocked
                         ? "bg-[#D51919] text-white"
-                        : "bg-black/10 text-[#121212]/55"
+                        : "bg-[var(--brand-soft)] text-[color:var(--brand-muted)]"
                     }`}
                   >
                     {unlocked ? "Unlocked" : "Locked"}
                   </span>
-                  <span className="inline-flex rounded-full bg-black/10 px-3 py-1 text-xs font-normal text-[#121212]/55">
+                  <span className="inline-flex rounded-full bg-[var(--brand-soft)] px-3 py-1 text-xs font-normal text-[color:var(--brand-muted)]">
                     {formatNumber(reward.checkpoint_coins)} {branding.coin_name}
                   </span>
                 </div>

@@ -72,18 +72,18 @@ export default function UserLeaderboardPage() {
         <p className="text-sm font-normal uppercase tracking-[0.18em] text-[#D51919]">
           {branding.app_name}
         </p>
-        <h1 className="mt-4 text-4xl font-bold tracking-tight text-[#121212] sm:text-5xl">
+        <h1 className="mt-4 text-4xl font-bold tracking-tight text-[var(--brand-text)] sm:text-5xl">
           Leaderboard
         </h1>
-        <p className="mt-4 max-w-xl text-base font-normal leading-7 text-[#121212]/65">
+        <p className="mt-4 max-w-xl text-base font-normal leading-7 text-[color:var(--brand-muted)]">
           Top {branding.coin_name} earners this cycle.
         </p>
       </header>
 
-      <section className="rounded-lg border border-black/10 bg-black/[0.04] p-6">
+      <section className="rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] p-6">
         {isLoading ? (
-          <div className="rounded-lg border border-black/10 bg-black/[0.04] p-5">
-            <p className="text-sm font-normal text-[#121212]/60">
+          <div className="rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] p-5">
+            <p className="text-sm font-normal text-[color:var(--brand-muted)]">
               Loading leaderboard...
             </p>
           </div>
@@ -91,16 +91,16 @@ export default function UserLeaderboardPage() {
 
         {!isLoading && error ? (
           <div className="rounded-lg border border-[#D51919]/35 bg-[#D51919]/10 p-5">
-            <p className="text-sm font-normal text-[#121212]">{error}</p>
+            <p className="text-sm font-normal text-[var(--brand-text)]">{error}</p>
           </div>
         ) : null}
 
         {!isLoading && !error && leaderboard.length === 0 ? (
-          <div className="rounded-lg border border-black/10 bg-black/[0.04] p-8 text-center">
-            <h2 className="text-lg font-bold text-[#121212]">
+          <div className="rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] p-8 text-center">
+            <h2 className="text-lg font-bold text-[var(--brand-text)]">
               No leaderboard activity yet
             </h2>
-            <p className="mx-auto mt-2 max-w-md text-sm font-normal leading-6 text-[#121212]/60">
+            <p className="mx-auto mt-2 max-w-md text-sm font-normal leading-6 text-[color:var(--brand-muted)]">
               Coin transactions will appear here once users start earning{" "}
               {branding.coin_name}.
             </p>
@@ -108,7 +108,7 @@ export default function UserLeaderboardPage() {
         ) : null}
 
         {!isLoading && !error && leaderboard.length > 0 ? (
-          <div className="divide-y divide-black/10">
+          <div className="divide-y divide-[var(--brand-border)]">
             {leaderboard.map((user, index) => {
               const isCurrentUser = user.user_email === userEmail;
 
@@ -116,7 +116,7 @@ export default function UserLeaderboardPage() {
                 <div
                   key={user.user_email}
                   className={`flex items-center justify-between gap-4 py-4 ${
-                    isCurrentUser ? "text-[#121212]" : "text-[#121212]/70"
+                    isCurrentUser ? "text-[var(--brand-text)]" : "text-[color:var(--brand-muted)]"
                   }`}
                 >
                   <div className="flex min-w-0 items-center gap-4">
@@ -124,7 +124,7 @@ export default function UserLeaderboardPage() {
                       className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm font-bold ${
                         isCurrentUser
                           ? "bg-[#D51919] text-white"
-                          : "bg-black/10 text-[#121212]/60"
+                          : "bg-[var(--brand-soft)] text-[color:var(--brand-muted)]"
                       }`}
                     >
                       {index + 1}

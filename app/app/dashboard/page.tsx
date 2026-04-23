@@ -28,10 +28,10 @@ function PageHeader({
       <p className="text-sm font-normal uppercase tracking-[0.18em] text-[#D51919]">
         {appName}
       </p>
-      <h1 className="mt-4 text-4xl font-bold tracking-tight text-[#121212] sm:text-5xl">
+      <h1 className="mt-4 text-4xl font-bold tracking-tight text-[var(--brand-text)] sm:text-5xl">
         Loyalty Dashboard
       </h1>
-      <p className="mt-4 max-w-xl text-base font-normal leading-7 text-[#121212]/65">
+      <p className="mt-4 max-w-xl text-base font-normal leading-7 text-[color:var(--brand-muted)]">
         Track your {coinName} and rewards
       </p>
     </header>
@@ -50,21 +50,21 @@ function StatsCard({
   coinName: string;
 }) {
   return (
-    <section className="rounded-lg border border-black/10 bg-black/[0.05] p-6">
+    <section className="rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] p-6">
       <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-sm font-normal uppercase tracking-[0.18em] text-[#D51919]">
             {coinName} balance
           </p>
-          <p className="mt-3 text-5xl font-bold tracking-tight text-[#121212]">
+          <p className="mt-3 text-5xl font-bold tracking-tight text-[var(--brand-text)]">
             {formatNumber(balance)}
           </p>
         </div>
-        <div className="border-t border-black/10 pt-5 sm:border-l sm:border-t-0 sm:pl-8 sm:pt-0">
-          <p className="text-sm font-normal text-[#121212]/55">
+        <div className="border-t border-[var(--brand-border)] pt-5 sm:border-l sm:border-t-0 sm:pl-8 sm:pt-0">
+          <p className="text-sm font-normal text-[color:var(--brand-muted)]">
             Next reward at
           </p>
-          <p className="mt-2 text-2xl font-bold tracking-tight text-[#121212]">
+          <p className="mt-2 text-2xl font-bold tracking-tight text-[var(--brand-text)]">
             {nextReward
               ? `${formatNumber(nextReward.checkpoint_coins)} ${coinName}`
               : hasRewards
@@ -98,17 +98,17 @@ function ProgressCard({
         : 0;
 
   return (
-    <section className="rounded-lg border border-black/10 bg-[#F5F5F5] p-6">
+    <section className="rounded-lg border border-[var(--brand-border)] bg-[var(--brand-bg)] p-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-[#121212]">
+          <h2 className="text-xl font-bold tracking-tight text-[var(--brand-text)]">
             Reward Progress
           </h2>
-          <p className="mt-2 text-sm font-normal leading-6 text-[#121212]/60">
+          <p className="mt-2 text-sm font-normal leading-6 text-[color:var(--brand-muted)]">
             Current progress toward your next loyalty reward.
           </p>
         </div>
-        <p className="text-sm font-normal text-[#121212]/65">
+        <p className="text-sm font-normal text-[color:var(--brand-muted)]">
           {formatNumber(balance)} /{" "}
           {nextReward
             ? formatNumber(nextReward.checkpoint_coins)
@@ -119,13 +119,13 @@ function ProgressCard({
       </div>
 
       <div className="mt-8">
-        <div className="h-3 overflow-hidden rounded-full bg-black/10">
+        <div className="h-3 overflow-hidden rounded-full bg-[var(--brand-soft)]">
           <div
             className="h-full rounded-full bg-[#D51919]"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
-        <div className="mt-3 flex items-center justify-between text-xs font-normal text-[#121212]/50">
+        <div className="mt-3 flex items-center justify-between text-xs font-normal text-[color:var(--brand-muted)]">
           <span>0</span>
           <span>
             {nextReward
@@ -145,17 +145,17 @@ function ProgressCard({
           return (
             <div
               key={reward.id}
-              className="rounded-lg border border-black/10 bg-black/[0.04] p-4"
+              className="rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] p-4"
             >
               <div
                 className={`mb-4 h-2 w-2 rounded-full ${
-                  unlocked ? "bg-[#D51919]" : "bg-[#121212]/25"
+                  unlocked ? "bg-[#D51919]" : "bg-[var(--brand-soft)]"
                 }`}
               />
-              <p className="text-lg font-bold tracking-tight text-[#121212]">
+              <p className="text-lg font-bold tracking-tight text-[var(--brand-text)]">
                 {formatNumber(reward.checkpoint_coins)}
               </p>
-              <p className="mt-1 truncate text-xs font-normal uppercase tracking-[0.16em] text-[#121212]/45">
+              <p className="mt-1 truncate text-xs font-normal uppercase tracking-[0.16em] text-[color:var(--brand-muted)]">
                 {reward.title}
               </p>
             </div>
@@ -163,8 +163,8 @@ function ProgressCard({
           })}
         </div>
       ) : (
-        <div className="mt-8 rounded-lg border border-black/10 bg-black/[0.04] p-5">
-          <p className="text-sm font-normal leading-6 text-[#121212]/60">
+        <div className="mt-8 rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] p-5">
+          <p className="text-sm font-normal leading-6 text-[color:var(--brand-muted)]">
             No active reward checkpoints are available yet.
           </p>
         </div>
@@ -185,17 +185,17 @@ function RewardsPreview({
   coinName: string;
 }) {
   return (
-    <section className="rounded-lg border border-black/10 bg-black/[0.04] p-6">
+    <section className="rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] p-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-[#121212]">
+          <h2 className="text-xl font-bold tracking-tight text-[var(--brand-text)]">
             Unlocked Rewards
           </h2>
-          <p className="mt-2 text-sm font-normal leading-6 text-[#121212]/60">
+          <p className="mt-2 text-sm font-normal leading-6 text-[color:var(--brand-muted)]">
             Rewards available from your current {coinName} balance.
           </p>
         </div>
-        <p className="text-sm font-normal text-[#121212]/55">
+        <p className="text-sm font-normal text-[color:var(--brand-muted)]">
           {unlockedRewards.length} unlocked / {lockedRewards.length} locked
         </p>
       </div>
@@ -209,22 +209,22 @@ function RewardsPreview({
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
-                  <p className="truncate text-base font-bold text-[#121212]">
+                  <p className="truncate text-base font-bold text-[var(--brand-text)]">
                     {reward.title}
                   </p>
-                  <p className="mt-2 text-sm font-normal leading-6 text-[#121212]/60">
+                  <p className="mt-2 text-sm font-normal leading-6 text-[color:var(--brand-muted)]">
                     {reward.description || "Unlocked reward"}
                   </p>
                 </div>
-                <span className="shrink-0 rounded-full bg-[#D51919]/20 px-3 py-1 text-xs font-normal text-[#121212] ring-1 ring-[#D51919]/35">
+                <span className="shrink-0 rounded-full bg-[#D51919]/20 px-3 py-1 text-xs font-normal text-[var(--brand-text)] ring-1 ring-[#D51919]/35">
                   Unlocked
                 </span>
               </div>
             </div>
           ))
         ) : (
-          <div className="rounded-lg border border-black/10 bg-black/[0.04] p-5 md:col-span-2">
-            <p className="text-sm font-normal leading-6 text-[#121212]/60">
+          <div className="rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] p-5 md:col-span-2">
+            <p className="text-sm font-normal leading-6 text-[color:var(--brand-muted)]">
               {hasRewards
                 ? `No rewards unlocked yet. Earn more ${coinName} to activate your first checkpoint.`
                 : "No active rewards are available yet."}
@@ -306,14 +306,14 @@ export default function UserDashboardPage() {
       <PageHeader appName={branding.app_name} coinName={branding.coin_name} />
 
       {userEmail ? (
-        <p className="mb-5 text-sm font-normal text-[#121212]/45">
+        <p className="mb-5 text-sm font-normal text-[color:var(--brand-muted)]">
           Signed in as {userEmail}
         </p>
       ) : null}
 
       {isLoading ? (
-        <section className="rounded-lg border border-black/10 bg-black/[0.04] p-6">
-          <p className="text-sm font-normal text-[#121212]/60">
+        <section className="rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] p-6">
+          <p className="text-sm font-normal text-[color:var(--brand-muted)]">
             Loading your loyalty dashboard...
           </p>
         </section>
@@ -321,7 +321,7 @@ export default function UserDashboardPage() {
 
       {!isLoading && error ? (
         <section className="rounded-lg border border-[#D51919]/35 bg-[#D51919]/10 p-6">
-          <p className="text-sm font-normal text-[#121212]">{error}</p>
+          <p className="text-sm font-normal text-[var(--brand-text)]">{error}</p>
         </section>
       ) : null}
 

@@ -233,16 +233,16 @@ export default function AdminRewardsPage() {
         <p className="text-sm font-normal uppercase tracking-[0.18em] text-[#D51919]">
           ZEROMODE ADMIN
         </p>
-        <h1 className="mt-4 text-4xl font-bold tracking-tight text-[#121212] sm:text-5xl">
+        <h1 className="mt-4 text-4xl font-bold tracking-tight text-[var(--brand-text)] sm:text-5xl">
           Reward Checkpoints
         </h1>
-        <p className="mt-4 max-w-2xl text-base font-normal leading-7 text-[#121212]/65">
+        <p className="mt-4 max-w-2xl text-base font-normal leading-7 text-[color:var(--brand-muted)]">
           Manage reward names, checkpoint requirements, and availability.
         </p>
       </header>
 
-      <section className="mb-5 rounded-lg border border-black/10 bg-black/[0.04] p-6">
-        <h2 className="text-lg font-bold text-[#121212]">
+      <section className="mb-5 rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] p-6">
+        <h2 className="text-lg font-bold text-[var(--brand-text)]">
           Add Reward
         </h2>
         <form className="mt-4 grid gap-3" onSubmit={handleCreateReward}>
@@ -259,7 +259,7 @@ export default function AdminRewardsPage() {
                 setNotice("");
               }}
               placeholder="Reward title"
-              className="h-10 rounded-lg border border-black/10 bg-black/[0.06] px-3 text-sm font-normal text-[#121212] outline-none transition placeholder:text-[#121212]/35 focus:border-[#D51919] focus:bg-black/[0.09] focus:ring-2 focus:ring-[#D51919]/35"
+              className="h-10 rounded-lg border border-[var(--brand-border)] bg-[var(--brand-field)] px-3 text-sm font-normal text-[var(--brand-text)] outline-none transition placeholder:text-[color:var(--brand-placeholder)] focus:border-[#D51919] focus:bg-[var(--brand-field-focus)] focus:ring-2 focus:ring-[#D51919]/35"
             />
             <input
               type="number"
@@ -274,7 +274,7 @@ export default function AdminRewardsPage() {
                 setNotice("");
               }}
               placeholder="Checkpoint"
-              className="h-10 rounded-lg border border-black/10 bg-black/[0.06] px-3 text-sm font-normal text-[#121212] outline-none transition placeholder:text-[#121212]/35 focus:border-[#D51919] focus:bg-black/[0.09] focus:ring-2 focus:ring-[#D51919]/35"
+              className="h-10 rounded-lg border border-[var(--brand-border)] bg-[var(--brand-field)] px-3 text-sm font-normal text-[var(--brand-text)] outline-none transition placeholder:text-[color:var(--brand-placeholder)] focus:border-[#D51919] focus:bg-[var(--brand-field-focus)] focus:ring-2 focus:ring-[#D51919]/35"
             />
             <input
               type="text"
@@ -288,9 +288,9 @@ export default function AdminRewardsPage() {
                 setNotice("");
               }}
               placeholder="reward_type"
-              className="h-10 rounded-lg border border-black/10 bg-black/[0.06] px-3 text-sm font-normal text-[#121212] outline-none transition placeholder:text-[#121212]/35 focus:border-[#D51919] focus:bg-black/[0.09] focus:ring-2 focus:ring-[#D51919]/35"
+              className="h-10 rounded-lg border border-[var(--brand-border)] bg-[var(--brand-field)] px-3 text-sm font-normal text-[var(--brand-text)] outline-none transition placeholder:text-[color:var(--brand-placeholder)] focus:border-[#D51919] focus:bg-[var(--brand-field-focus)] focus:ring-2 focus:ring-[#D51919]/35"
             />
-            <label className="flex h-10 items-center gap-2 rounded-lg border border-black/10 bg-black/[0.04] px-3 text-sm font-normal text-[#121212]/70">
+            <label className="flex h-10 items-center gap-2 rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] px-3 text-sm font-normal text-[color:var(--brand-muted)]">
               <input
                 type="checkbox"
                 checked={newReward.is_active}
@@ -319,28 +319,28 @@ export default function AdminRewardsPage() {
             }}
             placeholder="Description"
             rows={3}
-            className="rounded-lg border border-black/10 bg-black/[0.06] px-3 py-3 text-sm font-normal text-[#121212] outline-none transition placeholder:text-[#121212]/35 focus:border-[#D51919] focus:bg-black/[0.09] focus:ring-2 focus:ring-[#D51919]/35"
+            className="rounded-lg border border-[var(--brand-border)] bg-[var(--brand-field)] px-3 py-3 text-sm font-normal text-[var(--brand-text)] outline-none transition placeholder:text-[color:var(--brand-placeholder)] focus:border-[#D51919] focus:bg-[var(--brand-field-focus)] focus:ring-2 focus:ring-[#D51919]/35"
           />
           <button
             type="submit"
             disabled={isCreating}
-            className="h-10 rounded-lg bg-[#D51919] px-4 text-sm font-bold text-white transition hover:bg-[#b91616] focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#F5F5F5] disabled:cursor-not-allowed disabled:opacity-70 sm:w-fit"
+            className="h-10 rounded-lg bg-[#D51919] px-4 text-sm font-bold text-white transition hover:bg-[#b91616] focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[var(--brand-bg)] disabled:cursor-not-allowed disabled:opacity-70 sm:w-fit"
           >
             {isCreating ? "Adding..." : "Add Reward"}
           </button>
         </form>
       </section>
 
-      <section className="rounded-lg border border-black/10 bg-black/[0.04] p-6">
+      <section className="rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] p-6">
         {notice ? (
-          <p className="mb-4 text-sm font-normal text-[#121212]/65">
+          <p className="mb-4 text-sm font-normal text-[color:var(--brand-muted)]">
             {notice}
           </p>
         ) : null}
 
         {isLoading ? (
-          <div className="rounded-lg border border-black/10 bg-black/[0.04] p-5">
-            <p className="text-sm font-normal text-[#121212]/60">
+          <div className="rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] p-5">
+            <p className="text-sm font-normal text-[color:var(--brand-muted)]">
               Loading rewards...
             </p>
           </div>
@@ -348,16 +348,16 @@ export default function AdminRewardsPage() {
 
         {!isLoading && error ? (
           <div className="rounded-lg border border-[#D51919]/35 bg-[#D51919]/10 p-5">
-            <p className="text-sm font-normal text-[#121212]">{error}</p>
+            <p className="text-sm font-normal text-[var(--brand-text)]">{error}</p>
           </div>
         ) : null}
 
         {!isLoading && rewards.length === 0 ? (
-          <div className="rounded-lg border border-black/10 bg-black/[0.04] p-8 text-center">
-            <h2 className="text-lg font-bold text-[#121212]">
+          <div className="rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] p-8 text-center">
+            <h2 className="text-lg font-bold text-[var(--brand-text)]">
               No rewards found
             </h2>
-            <p className="mx-auto mt-2 max-w-md text-sm font-normal leading-6 text-[#121212]/60">
+            <p className="mx-auto mt-2 max-w-md text-sm font-normal leading-6 text-[color:var(--brand-muted)]">
               Rewards from Supabase will appear here once rows exist in the
               rewards table.
             </p>
@@ -373,7 +373,7 @@ export default function AdminRewardsPage() {
               return (
                 <div
                   key={reward.id}
-                  className="rounded-lg border border-black/10 bg-black/[0.03] p-4"
+                  className="rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] p-4"
                 >
                   <div className="grid gap-3 xl:grid-cols-[1fr_160px_180px_120px]">
                     <input
@@ -390,7 +390,7 @@ export default function AdminRewardsPage() {
                         setError("");
                         setNotice("");
                       }}
-                      className="h-10 rounded-lg border border-black/10 bg-black/[0.06] px-3 text-sm font-normal text-[#121212] outline-none transition placeholder:text-[#121212]/35 focus:border-[#D51919] focus:bg-black/[0.09] focus:ring-2 focus:ring-[#D51919]/35"
+                      className="h-10 rounded-lg border border-[var(--brand-border)] bg-[var(--brand-field)] px-3 text-sm font-normal text-[var(--brand-text)] outline-none transition placeholder:text-[color:var(--brand-placeholder)] focus:border-[#D51919] focus:bg-[var(--brand-field-focus)] focus:ring-2 focus:ring-[#D51919]/35"
                     />
                     <input
                       type="number"
@@ -407,7 +407,7 @@ export default function AdminRewardsPage() {
                         setError("");
                         setNotice("");
                       }}
-                      className="h-10 rounded-lg border border-black/10 bg-black/[0.06] px-3 text-sm font-normal text-[#121212] outline-none transition placeholder:text-[#121212]/35 focus:border-[#D51919] focus:bg-black/[0.09] focus:ring-2 focus:ring-[#D51919]/35"
+                      className="h-10 rounded-lg border border-[var(--brand-border)] bg-[var(--brand-field)] px-3 text-sm font-normal text-[var(--brand-text)] outline-none transition placeholder:text-[color:var(--brand-placeholder)] focus:border-[#D51919] focus:bg-[var(--brand-field-focus)] focus:ring-2 focus:ring-[#D51919]/35"
                     />
                     <input
                       type="text"
@@ -423,9 +423,9 @@ export default function AdminRewardsPage() {
                         setError("");
                         setNotice("");
                       }}
-                      className="h-10 rounded-lg border border-black/10 bg-black/[0.06] px-3 text-sm font-normal text-[#121212] outline-none transition placeholder:text-[#121212]/35 focus:border-[#D51919] focus:bg-black/[0.09] focus:ring-2 focus:ring-[#D51919]/35"
+                      className="h-10 rounded-lg border border-[var(--brand-border)] bg-[var(--brand-field)] px-3 text-sm font-normal text-[var(--brand-text)] outline-none transition placeholder:text-[color:var(--brand-placeholder)] focus:border-[#D51919] focus:bg-[var(--brand-field-focus)] focus:ring-2 focus:ring-[#D51919]/35"
                     />
-                    <label className="flex h-10 items-center gap-2 rounded-lg border border-black/10 bg-black/[0.04] px-3 text-sm font-normal text-[#121212]/70">
+                    <label className="flex h-10 items-center gap-2 rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] px-3 text-sm font-normal text-[color:var(--brand-muted)]">
                       <input
                         type="checkbox"
                         checked={draft.is_active}
@@ -459,14 +459,14 @@ export default function AdminRewardsPage() {
                       setNotice("");
                     }}
                     rows={3}
-                    className="mt-3 w-full rounded-lg border border-black/10 bg-black/[0.06] px-3 py-3 text-sm font-normal text-[#121212] outline-none transition placeholder:text-[#121212]/35 focus:border-[#D51919] focus:bg-black/[0.09] focus:ring-2 focus:ring-[#D51919]/35"
+                    className="mt-3 w-full rounded-lg border border-[var(--brand-border)] bg-[var(--brand-field)] px-3 py-3 text-sm font-normal text-[var(--brand-text)] outline-none transition placeholder:text-[color:var(--brand-placeholder)] focus:border-[#D51919] focus:bg-[var(--brand-field-focus)] focus:ring-2 focus:ring-[#D51919]/35"
                   />
                   <div className="mt-3 flex flex-col gap-3 sm:flex-row">
                     <button
                       type="button"
                       disabled={pendingRewardId === reward.id}
                       onClick={() => handleSaveReward(reward)}
-                      className="h-10 rounded-lg border border-black/10 bg-black/[0.06] px-4 text-sm font-normal text-[#121212] transition hover:border-[#D51919]/60 hover:bg-[#D51919]/15 focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#F5F5F5] disabled:cursor-not-allowed disabled:opacity-70"
+                      className="h-10 rounded-lg border border-[var(--brand-border)] bg-[var(--brand-field)] px-4 text-sm font-normal text-[var(--brand-text)] transition hover:border-[#D51919]/60 hover:bg-[#D51919]/15 focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[var(--brand-bg)] disabled:cursor-not-allowed disabled:opacity-70"
                     >
                       {pendingRewardId === reward.id ? "Saving..." : "Save"}
                     </button>
@@ -474,7 +474,7 @@ export default function AdminRewardsPage() {
                       type="button"
                       disabled={pendingRewardId === reward.id}
                       onClick={() => handleDeleteReward(reward)}
-                      className="h-10 rounded-lg border border-[#D51919]/40 bg-[#D51919]/10 px-4 text-sm font-normal text-[#121212] transition hover:bg-[#D51919]/20 focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#F5F5F5] disabled:cursor-not-allowed disabled:opacity-70"
+                      className="h-10 rounded-lg border border-[#D51919]/40 bg-[#D51919]/10 px-4 text-sm font-normal text-[var(--brand-text)] transition hover:bg-[#D51919]/20 focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[var(--brand-bg)] disabled:cursor-not-allowed disabled:opacity-70"
                     >
                       Delete
                     </button>

@@ -1,11 +1,13 @@
 "use client";
 
 import type { FormEvent } from "react";
+import type { CSSProperties } from "react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getUserRoleByEmail, normalizeEmail } from "@/lib/access";
 import {
   defaultBranding,
+  getThemeVariables,
   getBrandingSettings,
   type BrandingSettings,
 } from "@/lib/branding";
@@ -67,9 +69,11 @@ export default function LoginPage() {
     <main
       className="flex min-h-screen items-center justify-center px-6 py-12 font-sans"
       style={{
+        ...getThemeVariables(branding),
         backgroundColor: branding.bg_color,
         color: branding.text_color,
-      }}
+      } as CSSProperties}
+      data-theme={branding.theme_mode}
     >
       <section className="w-full max-w-md">
         <div className="mb-9 text-center">
@@ -90,14 +94,14 @@ export default function LoginPage() {
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
             {branding.app_name}
           </h1>
-          <p className="mt-4 text-base font-normal text-[#121212]/70">
+          <p className="mt-4 text-base font-normal text-[color:var(--brand-muted)]">
             Customer-only loyalty access
           </p>
         </div>
 
         <form className="space-y-5" onSubmit={handleSubmit}>
           <label className="block">
-            <span className="mb-2 block text-sm font-normal text-[#121212]/80">
+            <span className="mb-2 block text-sm font-normal text-[color:var(--brand-muted)]">
               Email address
             </span>
             <input
@@ -113,7 +117,7 @@ export default function LoginPage() {
               aria-invalid={error ? "true" : "false"}
               aria-describedby={error ? "login-error" : undefined}
               required
-              className="h-12 w-full rounded-lg border border-black/10 bg-black/[0.06] px-4 text-base font-normal text-[#121212] outline-none transition placeholder:text-[#121212]/35 focus:bg-black/[0.09]"
+              className="h-12 w-full rounded-lg border border-[var(--brand-border)] bg-[var(--brand-field)] px-4 text-base font-normal text-[var(--brand-text)] outline-none transition placeholder:text-[color:var(--brand-placeholder)] focus:bg-[var(--brand-field-focus)]"
               style={{ borderColor: error ? branding.accent_color : undefined }}
             />
           </label>
@@ -141,7 +145,7 @@ export default function LoginPage() {
           ) : null}
         </form>
 
-        <p className="mt-4 text-center text-sm font-normal leading-6 text-[#121212]/55">
+        <p className="mt-4 text-center text-sm font-normal leading-6 text-[color:var(--brand-muted)]">
           Enter the email you used for your {branding.app_name} order
         </p>
       </section>
