@@ -23,8 +23,8 @@ export const brandingSettingsUpdatedEvent = "branding-settings-updated";
 export const defaultBranding: BrandingSettings = {
   app_name: "ZEROMODE Loyalty",
   logo_url: "",
-  bg_color: "#121212",
-  text_color: "#F5F5F5",
+  bg_color: "#F5F5F5",
+  text_color: "#121212",
   accent_color: "#D51919",
   coin_name: "Z Coins",
 };

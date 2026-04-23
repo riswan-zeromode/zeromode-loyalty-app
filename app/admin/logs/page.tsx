@@ -288,22 +288,22 @@ export default function AdminTransactionLogsPage() {
         <p className="text-sm font-normal uppercase tracking-[0.18em] text-[#D51919]">
           {branding.app_name} ADMIN
         </p>
-        <h1 className="mt-4 text-4xl font-bold tracking-tight text-[#F5F5F5] sm:text-5xl">
+        <h1 className="mt-4 text-4xl font-bold tracking-tight text-[#121212] sm:text-5xl">
           Transaction Logs
         </h1>
-        <p className="mt-4 max-w-2xl text-base font-normal leading-7 text-[#F5F5F5]/65">
+        <p className="mt-4 max-w-2xl text-base font-normal leading-7 text-[#121212]/65">
           Review coin history and add correction adjustments.
         </p>
       </header>
 
-      <section className="rounded-lg border border-white/10 bg-[#171717] p-6">
+      <section className="rounded-lg border border-black/10 bg-[#F5F5F5] p-6">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <input
             type="search"
             value={searchEmail}
             onChange={(event) => setSearchEmail(event.target.value)}
             placeholder="Search by user email"
-            className="h-11 w-full rounded-lg border border-white/10 bg-white/[0.06] px-4 text-sm font-normal text-[#F5F5F5] outline-none transition placeholder:text-[#F5F5F5]/35 focus:border-[#D51919] focus:bg-white/[0.09] focus:ring-2 focus:ring-[#D51919]/35 lg:max-w-sm"
+            className="h-11 w-full rounded-lg border border-black/10 bg-black/[0.06] px-4 text-sm font-normal text-[#121212] outline-none transition placeholder:text-[#121212]/35 focus:border-[#D51919] focus:bg-black/[0.09] focus:ring-2 focus:ring-[#D51919]/35 lg:max-w-sm"
           />
 
           <div className="flex flex-wrap gap-2">
@@ -315,10 +315,10 @@ export default function AdminTransactionLogsPage() {
                   key={filter.value}
                   type="button"
                   onClick={() => setAmountFilter(filter.value)}
-                  className={`rounded-lg px-4 py-2 text-sm font-normal transition focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#121212] ${
+                  className={`rounded-lg px-4 py-2 text-sm font-normal transition focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#F5F5F5] ${
                     isSelected
-                      ? "bg-[#D51919] text-[#F5F5F5]"
-                      : "border border-white/10 bg-white/[0.04] text-[#F5F5F5]/65 hover:border-[#D51919]/50 hover:text-[#F5F5F5]"
+                      ? "bg-[#D51919] text-white"
+                      : "border border-black/10 bg-black/[0.04] text-[#121212]/65 hover:border-[#D51919]/50 hover:text-[#121212]"
                   }`}
                 >
                   {filter.label}
@@ -329,15 +329,15 @@ export default function AdminTransactionLogsPage() {
         </div>
 
         {notice ? (
-          <p className="mt-4 text-sm font-normal text-[#F5F5F5]/65">
+          <p className="mt-4 text-sm font-normal text-[#121212]/65">
             {notice}
           </p>
         ) : null}
 
         <div className="mt-6">
           {isLoading ? (
-            <div className="rounded-lg border border-white/10 bg-white/[0.04] p-5">
-              <p className="text-sm font-normal text-[#F5F5F5]/60">
+            <div className="rounded-lg border border-black/10 bg-black/[0.04] p-5">
+              <p className="text-sm font-normal text-[#121212]/60">
                 Loading transaction logs...
               </p>
             </div>
@@ -345,16 +345,16 @@ export default function AdminTransactionLogsPage() {
 
           {!isLoading && error ? (
             <div className="rounded-lg border border-[#D51919]/35 bg-[#D51919]/10 p-5">
-              <p className="text-sm font-normal text-[#F5F5F5]">{error}</p>
+              <p className="text-sm font-normal text-[#121212]">{error}</p>
             </div>
           ) : null}
 
           {!isLoading && !error && filteredTransactions.length === 0 ? (
-            <div className="rounded-lg border border-white/10 bg-white/[0.04] p-8 text-center">
-              <h2 className="text-lg font-bold text-[#F5F5F5]">
+            <div className="rounded-lg border border-black/10 bg-black/[0.04] p-8 text-center">
+              <h2 className="text-lg font-bold text-[#121212]">
                 No transactions found
               </h2>
-              <p className="mx-auto mt-2 max-w-md text-sm font-normal leading-6 text-[#F5F5F5]/60">
+              <p className="mx-auto mt-2 max-w-md text-sm font-normal leading-6 text-[#121212]/60">
                 Adjust your filters or create member transactions to populate
                 this log.
               </p>
@@ -363,9 +363,9 @@ export default function AdminTransactionLogsPage() {
 
           {!isLoading && !error && filteredTransactions.length > 0 ? (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-white/10 text-left">
+              <table className="min-w-full divide-y divide-black/10 text-left">
                 <thead>
-                  <tr className="text-xs font-normal uppercase tracking-[0.14em] text-[#F5F5F5]/40">
+                  <tr className="text-xs font-normal uppercase tracking-[0.14em] text-[#121212]/40">
                     <th className="py-3 pr-4">User Email</th>
                     <th className="px-4 py-3">Amount</th>
                     <th className="px-4 py-3">Reason</th>
@@ -375,32 +375,32 @@ export default function AdminTransactionLogsPage() {
                     <th className="py-3 pl-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/10">
+                <tbody className="divide-y divide-black/10">
                   {filteredTransactions.map((transaction) => {
                     const amount = readAmount(transaction.amount);
 
                     return (
                       <tr key={transaction.id} className="text-sm font-normal">
-                        <td className="max-w-[220px] truncate py-4 pr-4 text-[#F5F5F5]">
+                        <td className="max-w-[220px] truncate py-4 pr-4 text-[#121212]">
                           {transaction.user_email || "Unknown"}
                         </td>
                         <td
                           className={`px-4 py-4 ${
-                            amount < 0 ? "text-[#F5F5F5]/55" : "text-[#F5F5F5]"
+                            amount < 0 ? "text-[#121212]/55" : "text-[#121212]"
                           }`}
                         >
                           {formatAmount(transaction.amount)}
                         </td>
-                        <td className="max-w-[260px] truncate px-4 py-4 text-[#F5F5F5]/65">
+                        <td className="max-w-[260px] truncate px-4 py-4 text-[#121212]/65">
                           {transaction.reason || "Not recorded"}
                         </td>
-                        <td className="px-4 py-4 text-[#F5F5F5]/65">
+                        <td className="px-4 py-4 text-[#121212]/65">
                           {transaction.rule_label || "Manual"}
                         </td>
-                        <td className="max-w-[220px] truncate px-4 py-4 text-[#F5F5F5]/65">
+                        <td className="max-w-[220px] truncate px-4 py-4 text-[#121212]/65">
                           {transaction.created_by || "Not recorded"}
                         </td>
-                        <td className="whitespace-nowrap px-4 py-4 text-[#F5F5F5]/60">
+                        <td className="whitespace-nowrap px-4 py-4 text-[#121212]/60">
                           {formatDate(transaction.created_at)}
                         </td>
                         <td className="py-4 pl-4">
@@ -408,7 +408,7 @@ export default function AdminTransactionLogsPage() {
                             <button
                               type="button"
                               onClick={() => openAdjustmentModal(transaction)}
-                              className="h-9 rounded-lg border border-white/10 bg-white/[0.06] px-3 text-sm font-normal text-[#F5F5F5] transition hover:border-[#D51919]/60 hover:bg-[#D51919]/15 focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#171717]"
+                              className="h-9 rounded-lg border border-black/10 bg-black/[0.06] px-3 text-sm font-normal text-[#121212] transition hover:border-[#D51919]/60 hover:bg-[#D51919]/15 focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#F5F5F5]"
                             >
                               Adjust
                             </button>
@@ -418,7 +418,7 @@ export default function AdminTransactionLogsPage() {
                               onClick={() =>
                                 void handleDeleteTransaction(transaction)
                               }
-                              className="h-9 rounded-lg border border-[#D51919]/40 bg-[#D51919]/10 px-3 text-sm font-normal text-[#F5F5F5] transition hover:bg-[#D51919]/20 focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#171717] disabled:cursor-not-allowed disabled:opacity-45"
+                              className="h-9 rounded-lg border border-[#D51919]/40 bg-[#D51919]/10 px-3 text-sm font-normal text-[#121212] transition hover:bg-[#D51919]/20 focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#F5F5F5] disabled:cursor-not-allowed disabled:opacity-45"
                             >
                               {deletingTransactionId === transaction.id
                                 ? "Deleting..."
@@ -449,7 +449,7 @@ export default function AdminTransactionLogsPage() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="transaction-adjustment-title"
-            className="relative max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-lg border border-white/10 bg-[#171717] p-6 shadow-2xl shadow-black/40"
+            className="relative max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-lg border border-black/10 bg-[#F5F5F5] p-6 shadow-2xl shadow-black/40"
           >
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
@@ -458,7 +458,7 @@ export default function AdminTransactionLogsPage() {
                 </p>
                 <h2
                   id="transaction-adjustment-title"
-                  className="mt-3 truncate text-2xl font-bold tracking-tight text-[#F5F5F5]"
+                  className="mt-3 truncate text-2xl font-bold tracking-tight text-[#121212]"
                 >
                   {selectedTransaction.user_email || "Unknown member"}
                 </h2>
@@ -467,17 +467,17 @@ export default function AdminTransactionLogsPage() {
               <button
                 type="button"
                 onClick={closeAdjustmentModal}
-                className="h-9 rounded-lg border border-white/10 bg-white/[0.06] px-3 text-sm font-normal text-[#F5F5F5]/70 transition hover:border-[#D51919]/60 hover:text-[#F5F5F5] focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#171717]"
+                className="h-9 rounded-lg border border-black/10 bg-black/[0.06] px-3 text-sm font-normal text-[#121212]/70 transition hover:border-[#D51919]/60 hover:text-[#121212] focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#F5F5F5]"
               >
                 Close
               </button>
             </div>
 
-            <div className="mt-6 rounded-lg border border-white/10 bg-white/[0.04] p-4">
-              <p className="text-xs font-normal uppercase tracking-[0.16em] text-[#F5F5F5]/45">
+            <div className="mt-6 rounded-lg border border-black/10 bg-black/[0.04] p-4">
+              <p className="text-xs font-normal uppercase tracking-[0.16em] text-[#121212]/45">
                 Original transaction
               </p>
-              <p className="mt-3 text-sm font-normal text-[#F5F5F5]/70">
+              <p className="mt-3 text-sm font-normal text-[#121212]/70">
                 {formatAmount(selectedTransaction.amount)} from{" "}
                 {selectedTransaction.rule_label || "Manual"}
               </p>
@@ -487,7 +487,7 @@ export default function AdminTransactionLogsPage() {
               <div>
                 <label
                   htmlFor="log-adjustment-amount"
-                  className="text-sm font-normal text-[#F5F5F5]/65"
+                  className="text-sm font-normal text-[#121212]/65"
                 >
                   Adjustment amount
                 </label>
@@ -502,14 +502,14 @@ export default function AdminTransactionLogsPage() {
                     setNotice("");
                   }}
                   placeholder="10 or -10"
-                  className="mt-2 h-11 w-full rounded-lg border border-white/10 bg-white/[0.06] px-4 text-sm font-normal text-[#F5F5F5] outline-none transition placeholder:text-[#F5F5F5]/35 focus:border-[#D51919] focus:bg-white/[0.09] focus:ring-2 focus:ring-[#D51919]/35"
+                  className="mt-2 h-11 w-full rounded-lg border border-black/10 bg-black/[0.06] px-4 text-sm font-normal text-[#121212] outline-none transition placeholder:text-[#121212]/35 focus:border-[#D51919] focus:bg-black/[0.09] focus:ring-2 focus:ring-[#D51919]/35"
                 />
               </div>
 
               <div>
                 <label
                   htmlFor="log-adjustment-reason"
-                  className="text-sm font-normal text-[#F5F5F5]/65"
+                  className="text-sm font-normal text-[#121212]/65"
                 >
                   Reason
                 </label>
@@ -523,21 +523,21 @@ export default function AdminTransactionLogsPage() {
                     setNotice("");
                   }}
                   placeholder="Manual admin adjustment"
-                  className="mt-2 h-11 w-full rounded-lg border border-white/10 bg-white/[0.06] px-4 text-sm font-normal text-[#F5F5F5] outline-none transition placeholder:text-[#F5F5F5]/35 focus:border-[#D51919] focus:bg-white/[0.09] focus:ring-2 focus:ring-[#D51919]/35"
+                  className="mt-2 h-11 w-full rounded-lg border border-black/10 bg-black/[0.06] px-4 text-sm font-normal text-[#121212] outline-none transition placeholder:text-[#121212]/35 focus:border-[#D51919] focus:bg-black/[0.09] focus:ring-2 focus:ring-[#D51919]/35"
                 />
               </div>
 
               {error ? (
-                <p className="rounded-lg border border-[#D51919]/35 bg-[#D51919]/10 p-3 text-sm font-normal text-[#F5F5F5]">
+                <p className="rounded-lg border border-[#D51919]/35 bg-[#D51919]/10 p-3 text-sm font-normal text-[#121212]">
                   {error}
                 </p>
               ) : null}
 
-              <div className="border-t border-white/10 pt-5">
+              <div className="border-t border-black/10 pt-5">
                 <button
                   type="submit"
                   disabled={isAdjusting}
-                  className="h-10 rounded-lg bg-[#D51919] px-4 text-sm font-bold text-[#F5F5F5] transition hover:bg-[#b91616] focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#171717] disabled:cursor-not-allowed disabled:opacity-70"
+                  className="h-10 rounded-lg bg-[#D51919] px-4 text-sm font-bold text-white transition hover:bg-[#b91616] focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#F5F5F5] disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   {isAdjusting ? "Saving..." : "Save adjustment"}
                 </button>

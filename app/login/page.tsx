@@ -90,14 +90,14 @@ export default function LoginPage() {
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
             {branding.app_name}
           </h1>
-          <p className="mt-4 text-base font-normal text-[#F5F5F5]/70">
+          <p className="mt-4 text-base font-normal text-[#121212]/70">
             Customer-only loyalty access
           </p>
         </div>
 
         <form className="space-y-5" onSubmit={handleSubmit}>
           <label className="block">
-            <span className="mb-2 block text-sm font-normal text-[#F5F5F5]/80">
+            <span className="mb-2 block text-sm font-normal text-[#121212]/80">
               Email address
             </span>
             <input
@@ -113,7 +113,7 @@ export default function LoginPage() {
               aria-invalid={error ? "true" : "false"}
               aria-describedby={error ? "login-error" : undefined}
               required
-              className="h-12 w-full rounded-lg border border-white/10 bg-white/[0.06] px-4 text-base font-normal text-[#F5F5F5] outline-none transition placeholder:text-[#F5F5F5]/35 focus:bg-white/[0.09]"
+              className="h-12 w-full rounded-lg border border-black/10 bg-black/[0.06] px-4 text-base font-normal text-[#121212] outline-none transition placeholder:text-[#121212]/35 focus:bg-black/[0.09]"
               style={{ borderColor: error ? branding.accent_color : undefined }}
             />
           </label>
@@ -121,7 +121,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="h-12 w-full rounded-lg px-5 text-base font-bold text-[#F5F5F5] transition focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
+            className="h-12 w-full rounded-lg px-5 text-base font-bold text-white transition focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
             style={{
               backgroundColor: branding.accent_color,
               outlineColor: branding.accent_color,
@@ -141,7 +141,7 @@ export default function LoginPage() {
           ) : null}
         </form>
 
-        <p className="mt-4 text-center text-sm font-normal leading-6 text-[#F5F5F5]/55">
+        <p className="mt-4 text-center text-sm font-normal leading-6 text-[#121212]/55">
           Enter the email you used for your {branding.app_name} order
         </p>
       </section>

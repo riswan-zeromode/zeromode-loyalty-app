@@ -41,33 +41,33 @@ export default function UserSettingsPage() {
         <p className="text-sm font-normal uppercase tracking-[0.18em] text-[#D51919]">
           Loyalty Account
         </p>
-        <h1 className="mt-4 text-4xl font-bold tracking-tight text-[#F5F5F5] sm:text-5xl">
+        <h1 className="mt-4 text-4xl font-bold tracking-tight text-[#121212] sm:text-5xl">
           Settings
         </h1>
-        <p className="mt-4 max-w-xl text-base font-normal leading-7 text-[#F5F5F5]/65">
+        <p className="mt-4 max-w-xl text-base font-normal leading-7 text-[#121212]/65">
           Review your account access and session.
         </p>
       </header>
 
-      <section className="rounded-lg border border-white/10 bg-[#171717] p-6">
+      <section className="rounded-lg border border-black/10 bg-[#F5F5F5] p-6">
         {!hasCheckedSession ? (
-          <div className="rounded-lg border border-white/10 bg-white/[0.04] p-5">
-            <p className="text-sm font-normal text-[#F5F5F5]/60">
+          <div className="rounded-lg border border-black/10 bg-black/[0.04] p-5">
+            <p className="text-sm font-normal text-[#121212]/60">
               Loading settings...
             </p>
           </div>
         ) : (
           <>
-            <div className="divide-y divide-white/10">
+            <div className="divide-y divide-black/10">
               {settingsRows.map((setting) => (
                 <div
                   key={setting.label}
                   className="flex flex-col gap-2 py-4 sm:flex-row sm:items-center sm:justify-between"
                 >
-                  <p className="text-sm font-bold text-[#F5F5F5]">
+                  <p className="text-sm font-bold text-[#121212]">
                     {setting.label}
                   </p>
-                  <p className="break-all text-sm font-normal text-[#F5F5F5]/60 sm:text-right">
+                  <p className="break-all text-sm font-normal text-[#121212]/60 sm:text-right">
                     {setting.value}
                   </p>
                 </div>
@@ -77,7 +77,7 @@ export default function UserSettingsPage() {
             <button
               type="button"
               onClick={handleSignOut}
-              className="mt-6 h-10 rounded-lg border border-[#D51919]/40 bg-[#D51919]/10 px-4 text-sm font-normal text-[#F5F5F5] transition hover:bg-[#D51919]/20 focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#121212]"
+              className="mt-6 h-10 rounded-lg border border-[#D51919]/40 bg-[#D51919]/10 px-4 text-sm font-normal text-[#121212] transition hover:bg-[#D51919]/20 focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#F5F5F5]"
             >
               Sign out
             </button>

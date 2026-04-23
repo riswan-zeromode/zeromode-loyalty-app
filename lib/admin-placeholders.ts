@@ -24,8 +24,8 @@ export const rewardCheckpoints = [
 
 export const brandingSettings = [
   { label: "App Name", value: "ZEROMODE Loyalty" },
-  { label: "Background Color", value: "#121212" },
-  { label: "Text Color", value: "#F5F5F5" },
+  { label: "Background Color", value: "#F5F5F5" },
+  { label: "Text Color", value: "#121212" },
   { label: "Accent Color", value: "#D51919" },
   { label: "Coin Name", value: "Z Coins" },
 ];

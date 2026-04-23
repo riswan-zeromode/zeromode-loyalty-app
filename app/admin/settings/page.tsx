@@ -29,8 +29,8 @@ type BrandingPayload = BrandingDraft & {
 
 const defaultBranding: BrandingDraft = {
   app_name: "ZEROMODE Loyalty",
-  bg_color: "#121212",
-  text_color: "#F5F5F5",
+  bg_color: "#F5F5F5",
+  text_color: "#121212",
   accent_color: "#D51919",
   coin_name: "Z Coins",
 };
@@ -215,18 +215,18 @@ export default function AdminSettingsPage() {
         <p className="text-sm font-normal uppercase tracking-[0.18em] text-[#D51919]">
           ZEROMODE ADMIN
         </p>
-        <h1 className="mt-4 text-4xl font-bold tracking-tight text-[#F5F5F5] sm:text-5xl">
+        <h1 className="mt-4 text-4xl font-bold tracking-tight text-[#121212] sm:text-5xl">
           Branding Settings
         </h1>
-        <p className="mt-4 max-w-2xl text-base font-normal leading-7 text-[#F5F5F5]/65">
+        <p className="mt-4 max-w-2xl text-base font-normal leading-7 text-[#121212]/65">
           Manage the core loyalty brand values.
         </p>
       </header>
 
-      <section className="rounded-lg border border-white/10 bg-[#171717] p-6">
+      <section className="rounded-lg border border-black/10 bg-[#F5F5F5] p-6">
         {isLoading ? (
-          <div className="rounded-lg border border-white/10 bg-white/[0.04] p-5">
-            <p className="text-sm font-normal text-[#F5F5F5]/60">
+          <div className="rounded-lg border border-black/10 bg-black/[0.04] p-5">
+            <p className="text-sm font-normal text-[#121212]/60">
               Loading branding settings...
             </p>
           </div>
@@ -235,7 +235,7 @@ export default function AdminSettingsPage() {
         {!isLoading ? (
           <form onSubmit={handleSaveSettings}>
             <div className="mb-6 grid gap-4 lg:grid-cols-[240px_minmax(0,1fr)]">
-              <div className="flex min-h-40 items-center justify-center rounded-lg border border-dashed border-white/15 bg-white/[0.04] p-5">
+              <div className="flex min-h-40 items-center justify-center rounded-lg border border-dashed border-black/15 bg-black/[0.04] p-5">
                 <div className="text-center">
                   {logoPreviewUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -245,24 +245,24 @@ export default function AdminSettingsPage() {
                       className="mx-auto h-20 w-20 rounded-lg object-cover"
                     />
                   ) : (
-                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-lg bg-[#D51919] text-xl font-bold text-[#F5F5F5]">
+                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-lg bg-[#D51919] text-xl font-bold text-white">
                       Z
                     </div>
                   )}
-                  <p className="mt-3 text-sm font-normal text-[#F5F5F5]/60">
+                  <p className="mt-3 text-sm font-normal text-[#121212]/60">
                     Logo preview
                   </p>
                 </div>
               </div>
 
-              <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
-                <p className="text-xs font-normal uppercase tracking-[0.16em] text-[#F5F5F5]/45">
+              <div className="rounded-lg border border-black/10 bg-black/[0.04] p-4">
+                <p className="text-xs font-normal uppercase tracking-[0.16em] text-[#121212]/45">
                   Logo
                 </p>
-                <p className="mt-2 text-sm font-normal leading-6 text-[#F5F5F5]/60">
+                <p className="mt-2 text-sm font-normal leading-6 text-[#121212]/60">
                   Uploads to Supabase Storage and saves the public logo URL.
                 </p>
-                <label className="mt-4 inline-flex h-11 cursor-pointer items-center rounded-lg border border-white/10 bg-white/[0.06] px-4 text-sm font-normal text-[#F5F5F5] transition hover:border-[#D51919]/60 hover:bg-[#D51919]/15">
+                <label className="mt-4 inline-flex h-11 cursor-pointer items-center rounded-lg border border-black/10 bg-black/[0.06] px-4 text-sm font-normal text-[#121212] transition hover:border-[#D51919]/60 hover:bg-[#D51919]/15">
                   {isUploadingLogo ? "Uploading..." : "Choose Logo"}
                   <input
                     type="file"
@@ -273,7 +273,7 @@ export default function AdminSettingsPage() {
                   />
                 </label>
                 {selectedLogoName ? (
-                  <p className="mt-3 text-sm font-normal text-[#F5F5F5]/55">
+                  <p className="mt-3 text-sm font-normal text-[#121212]/55">
                     {isUploadingLogo
                       ? `Uploading ${selectedLogoName}...`
                       : `Saved: ${selectedLogoName}`}
@@ -294,9 +294,9 @@ export default function AdminSettingsPage() {
               ).map(([field, label]) => (
                 <label
                   key={field}
-                  className="rounded-lg border border-white/10 bg-white/[0.04] p-4"
+                  className="rounded-lg border border-black/10 bg-black/[0.04] p-4"
                 >
-                  <span className="text-xs font-normal uppercase tracking-[0.16em] text-[#F5F5F5]/45">
+                  <span className="text-xs font-normal uppercase tracking-[0.16em] text-[#121212]/45">
                     {label}
                   </span>
                   <input
@@ -310,28 +310,28 @@ export default function AdminSettingsPage() {
                       setError("");
                       setNotice("");
                     }}
-                    className="mt-2 h-10 w-full rounded-lg border border-white/10 bg-white/[0.06] px-3 text-sm font-normal text-[#F5F5F5] outline-none transition placeholder:text-[#F5F5F5]/35 focus:border-[#D51919] focus:bg-white/[0.09] focus:ring-2 focus:ring-[#D51919]/35"
+                    className="mt-2 h-10 w-full rounded-lg border border-black/10 bg-black/[0.06] px-3 text-sm font-normal text-[#121212] outline-none transition placeholder:text-[#121212]/35 focus:border-[#D51919] focus:bg-black/[0.09] focus:ring-2 focus:ring-[#D51919]/35"
                   />
                 </label>
               ))}
             </div>
 
             {notice ? (
-              <p className="mt-4 text-sm font-normal text-[#F5F5F5]/65">
+              <p className="mt-4 text-sm font-normal text-[#121212]/65">
                 {notice}
               </p>
             ) : null}
 
             {error ? (
               <div className="mt-4 rounded-lg border border-[#D51919]/35 bg-[#D51919]/10 p-4">
-                <p className="text-sm font-normal text-[#F5F5F5]">{error}</p>
+                <p className="text-sm font-normal text-[#121212]">{error}</p>
               </div>
             ) : null}
 
             <button
               type="submit"
               disabled={isSaving || isUploadingLogo}
-              className="mt-6 h-11 rounded-lg bg-[#D51919] px-4 text-sm font-bold text-[#F5F5F5] transition hover:bg-[#b91616] focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#121212] disabled:cursor-not-allowed disabled:opacity-70"
+              className="mt-6 h-11 rounded-lg bg-[#D51919] px-4 text-sm font-bold text-white transition hover:bg-[#b91616] focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#F5F5F5] disabled:cursor-not-allowed disabled:opacity-70"
             >
               {isSaving ? "Saving..." : "Save Changes"}
             </button>

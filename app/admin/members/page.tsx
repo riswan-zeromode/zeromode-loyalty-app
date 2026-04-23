@@ -59,11 +59,11 @@ function getMemberStatusLabel(status: string) {
 
 function getMemberStatusClasses(status: string) {
   if (isActiveMember(status)) {
-    return "bg-[#D51919]/15 text-[#F5F5F5] ring-[#D51919]/35";
+    return "bg-[#D51919]/15 text-[#121212] ring-[#D51919]/35";
   }
 
   if (isDeactivatedMember(status)) {
-    return "bg-white/[0.06] text-[#F5F5F5]/60 ring-white/10";
+    return "bg-black/[0.06] text-[#121212]/60 ring-black/10";
   }
 
   return "bg-amber-400/10 text-amber-100 ring-amber-300/25";
@@ -403,15 +403,15 @@ export default function AdminMembersPage() {
         <p className="text-sm font-normal uppercase tracking-[0.18em] text-[#D51919]">
           ZEROMODE ADMIN
         </p>
-        <h1 className="mt-4 text-4xl font-bold tracking-tight text-[#F5F5F5] sm:text-5xl">
+        <h1 className="mt-4 text-4xl font-bold tracking-tight text-[#121212] sm:text-5xl">
           Approved Customers
         </h1>
-        <p className="mt-4 max-w-2xl text-base font-normal leading-7 text-[#F5F5F5]/65">
+        <p className="mt-4 max-w-2xl text-base font-normal leading-7 text-[#121212]/65">
           Manage customer emails with loyalty access.
         </p>
       </header>
 
-      <section className="rounded-lg border border-white/10 bg-[#171717] p-6">
+      <section className="rounded-lg border border-black/10 bg-[#F5F5F5] p-6">
         <form className="flex flex-col gap-3 sm:flex-row" onSubmit={handleAddEmail}>
           <input
             type="email"
@@ -422,19 +422,19 @@ export default function AdminMembersPage() {
               setNotice("");
             }}
             placeholder="Add customer email"
-            className="h-11 min-w-0 rounded-lg border border-white/10 bg-white/[0.06] px-4 text-sm font-normal text-[#F5F5F5] outline-none transition placeholder:text-[#F5F5F5]/35 focus:border-[#D51919] focus:bg-white/[0.09] focus:ring-2 focus:ring-[#D51919]/35 sm:w-72"
+            className="h-11 min-w-0 rounded-lg border border-black/10 bg-black/[0.06] px-4 text-sm font-normal text-[#121212] outline-none transition placeholder:text-[#121212]/35 focus:border-[#D51919] focus:bg-black/[0.09] focus:ring-2 focus:ring-[#D51919]/35 sm:w-72"
           />
           <button
             type="submit"
             disabled={isAdding}
-            className="h-11 rounded-lg bg-[#D51919] px-4 text-sm font-bold text-[#F5F5F5] transition hover:bg-[#b91616] focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#121212] disabled:cursor-not-allowed disabled:opacity-70"
+            className="h-11 rounded-lg bg-[#D51919] px-4 text-sm font-bold text-white transition hover:bg-[#b91616] focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#F5F5F5] disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isAdding ? "Adding..." : "Add Email"}
           </button>
         </form>
 
         {notice ? (
-          <p className="mt-4 text-sm font-normal text-[#F5F5F5]/65">
+          <p className="mt-4 text-sm font-normal text-[#121212]/65">
             {notice}
           </p>
         ) : null}
@@ -453,10 +453,10 @@ export default function AdminMembersPage() {
                     setError("");
                     setNotice("");
                   }}
-                  className={`rounded-lg px-4 py-2 text-sm font-normal transition focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#121212] ${
+                  className={`rounded-lg px-4 py-2 text-sm font-normal transition focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#F5F5F5] ${
                     isSelected
-                      ? "bg-[#D51919] text-[#F5F5F5]"
-                      : "border border-white/10 bg-white/[0.04] text-[#F5F5F5]/65 hover:border-[#D51919]/50 hover:text-[#F5F5F5]"
+                      ? "bg-[#D51919] text-white"
+                      : "border border-black/10 bg-black/[0.04] text-[#121212]/65 hover:border-[#D51919]/50 hover:text-[#121212]"
                   }`}
                 >
                   {filter.label}
@@ -469,8 +469,8 @@ export default function AdminMembersPage() {
           </div>
 
           {isLoading ? (
-            <div className="rounded-lg border border-white/10 bg-white/[0.04] p-5">
-              <p className="text-sm font-normal text-[#F5F5F5]/60">
+            <div className="rounded-lg border border-black/10 bg-black/[0.04] p-5">
+              <p className="text-sm font-normal text-[#121212]/60">
                 Loading approved customers...
               </p>
             </div>
@@ -478,16 +478,16 @@ export default function AdminMembersPage() {
 
           {!isLoading && error ? (
             <div className="rounded-lg border border-[#D51919]/35 bg-[#D51919]/10 p-5">
-              <p className="text-sm font-normal text-[#F5F5F5]">{error}</p>
+              <p className="text-sm font-normal text-[#121212]">{error}</p>
             </div>
           ) : null}
 
           {!isLoading && !error && filteredUsers.length === 0 ? (
-            <div className="rounded-lg border border-white/10 bg-white/[0.04] p-8 text-center">
-              <h2 className="text-lg font-bold text-[#F5F5F5]">
+            <div className="rounded-lg border border-black/10 bg-black/[0.04] p-8 text-center">
+              <h2 className="text-lg font-bold text-[#121212]">
                 {emptyStateTitle}
               </h2>
-              <p className="mx-auto mt-2 max-w-md text-sm font-normal leading-6 text-[#F5F5F5]/60">
+              <p className="mx-auto mt-2 max-w-md text-sm font-normal leading-6 text-[#121212]/60">
                 {approvedUsers.length === 0
                   ? "Approved users from Supabase will appear here once rows exist in the approved_users table."
                   : "Switch filters to review customers in another access state."}
@@ -496,7 +496,7 @@ export default function AdminMembersPage() {
           ) : null}
 
           {!isLoading && filteredUsers.length > 0 ? (
-            <div className="divide-y divide-white/10">
+            <div className="divide-y divide-black/10">
               {filteredUsers.map((user) => {
                 const isActive = isActiveMember(user.status);
                 const isDeactivated = isDeactivatedMember(user.status);
@@ -516,14 +516,14 @@ export default function AdminMembersPage() {
                         openMemberModal(user);
                       }
                     }}
-                    className="grid cursor-pointer gap-3 rounded-lg px-3 py-4 transition hover:bg-white/[0.04] focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#171717] xl:grid-cols-[minmax(0,1fr)_150px_170px_220px]"
+                    className="grid cursor-pointer gap-3 rounded-lg px-3 py-4 transition hover:bg-black/[0.04] focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#F5F5F5] xl:grid-cols-[minmax(0,1fr)_150px_170px_220px]"
                   >
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-normal text-[#F5F5F5]">
+                      <p className="truncate text-sm font-normal text-[#121212]">
                         {user.email}
                       </p>
                       {user.notes ? (
-                        <p className="mt-1 truncate text-xs font-normal text-[#F5F5F5]/45">
+                        <p className="mt-1 truncate text-xs font-normal text-[#121212]/45">
                           {user.notes}
                         </p>
                       ) : null}
@@ -539,7 +539,7 @@ export default function AdminMembersPage() {
                       </span>
                     </div>
 
-                    <p className="text-sm font-normal text-[#F5F5F5]/60 xl:text-right">
+                    <p className="text-sm font-normal text-[#121212]/60 xl:text-right">
                       {formatDate(user.created_at)}
                     </p>
 
@@ -551,7 +551,7 @@ export default function AdminMembersPage() {
                           event.stopPropagation();
                           void handleSetMemberStatus(user, nextStatus);
                         }}
-                        className="h-9 rounded-lg border border-white/10 bg-white/[0.06] px-4 text-sm font-normal text-[#F5F5F5] transition hover:border-[#D51919]/60 hover:bg-[#D51919]/15 focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#121212] disabled:cursor-not-allowed disabled:opacity-45"
+                        className="h-9 rounded-lg border border-black/10 bg-black/[0.06] px-4 text-sm font-normal text-[#121212] transition hover:border-[#D51919]/60 hover:bg-[#D51919]/15 focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#F5F5F5] disabled:cursor-not-allowed disabled:opacity-45"
                       >
                         {pendingUserId === user.id
                           ? "Saving..."
@@ -568,7 +568,7 @@ export default function AdminMembersPage() {
                             event.stopPropagation();
                             void handleDeleteUser(user);
                           }}
-                          className="h-9 rounded-lg border border-[#D51919]/40 bg-[#D51919]/10 px-4 text-sm font-normal text-[#F5F5F5] transition hover:bg-[#D51919]/20 focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#121212] disabled:cursor-not-allowed disabled:opacity-45"
+                          className="h-9 rounded-lg border border-[#D51919]/40 bg-[#D51919]/10 px-4 text-sm font-normal text-[#121212] transition hover:bg-[#D51919]/20 focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#F5F5F5] disabled:cursor-not-allowed disabled:opacity-45"
                         >
                           Delete
                         </button>
@@ -595,7 +595,7 @@ export default function AdminMembersPage() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="member-details-title"
-            className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg border border-white/10 bg-[#171717] p-6 shadow-2xl shadow-black/40"
+            className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg border border-black/10 bg-[#F5F5F5] p-6 shadow-2xl shadow-black/40"
           >
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
@@ -604,7 +604,7 @@ export default function AdminMembersPage() {
                 </p>
                 <h2
                   id="member-details-title"
-                  className="mt-3 truncate text-2xl font-bold tracking-tight text-[#F5F5F5]"
+                  className="mt-3 truncate text-2xl font-bold tracking-tight text-[#121212]"
                 >
                   {selectedUser.email}
                 </h2>
@@ -613,15 +613,15 @@ export default function AdminMembersPage() {
               <button
                 type="button"
                 onClick={closeMemberModal}
-                className="h-9 rounded-lg border border-white/10 bg-white/[0.06] px-3 text-sm font-normal text-[#F5F5F5]/70 transition hover:border-[#D51919]/60 hover:text-[#F5F5F5] focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#171717]"
+                className="h-9 rounded-lg border border-black/10 bg-black/[0.06] px-3 text-sm font-normal text-[#121212]/70 transition hover:border-[#D51919]/60 hover:text-[#121212] focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#F5F5F5]"
               >
                 Close
               </button>
             </div>
 
             <div className="mt-6 grid gap-3 sm:grid-cols-3">
-              <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
-                <p className="text-xs font-normal uppercase tracking-[0.16em] text-[#F5F5F5]/45">
+              <div className="rounded-lg border border-black/10 bg-black/[0.04] p-4">
+                <p className="text-xs font-normal uppercase tracking-[0.16em] text-[#121212]/45">
                   Status
                 </p>
                 <span
@@ -633,11 +633,11 @@ export default function AdminMembersPage() {
                 </span>
               </div>
 
-              <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4 sm:col-span-2">
-                <p className="text-xs font-normal uppercase tracking-[0.16em] text-[#F5F5F5]/45">
+              <div className="rounded-lg border border-black/10 bg-black/[0.04] p-4 sm:col-span-2">
+                <p className="text-xs font-normal uppercase tracking-[0.16em] text-[#121212]/45">
                   Created
                 </p>
-                <p className="mt-3 text-sm font-normal text-[#F5F5F5]">
+                <p className="mt-3 text-sm font-normal text-[#121212]">
                   {formatDate(selectedUser.created_at)}
                 </p>
               </div>
@@ -647,7 +647,7 @@ export default function AdminMembersPage() {
               <div>
                 <label
                   htmlFor="manual-points"
-                  className="text-sm font-normal text-[#F5F5F5]/65"
+                  className="text-sm font-normal text-[#121212]/65"
                 >
                   Adjust points
                 </label>
@@ -662,14 +662,14 @@ export default function AdminMembersPage() {
                     setNotice("");
                   }}
                   placeholder="10 or -10"
-                  className="mt-2 h-11 w-full rounded-lg border border-white/10 bg-white/[0.06] px-4 text-sm font-normal text-[#F5F5F5] outline-none transition placeholder:text-[#F5F5F5]/35 focus:border-[#D51919] focus:bg-white/[0.09] focus:ring-2 focus:ring-[#D51919]/35"
+                  className="mt-2 h-11 w-full rounded-lg border border-black/10 bg-black/[0.06] px-4 text-sm font-normal text-[#121212] outline-none transition placeholder:text-[#121212]/35 focus:border-[#D51919] focus:bg-black/[0.09] focus:ring-2 focus:ring-[#D51919]/35"
                 />
               </div>
 
               <div>
                 <label
                   htmlFor="manual-reason"
-                  className="text-sm font-normal text-[#F5F5F5]/65"
+                  className="text-sm font-normal text-[#121212]/65"
                 >
                   Reason
                 </label>
@@ -683,27 +683,27 @@ export default function AdminMembersPage() {
                     setNotice("");
                   }}
                   placeholder="Manual admin adjustment"
-                  className="mt-2 h-11 w-full rounded-lg border border-white/10 bg-white/[0.06] px-4 text-sm font-normal text-[#F5F5F5] outline-none transition placeholder:text-[#F5F5F5]/35 focus:border-[#D51919] focus:bg-white/[0.09] focus:ring-2 focus:ring-[#D51919]/35"
+                  className="mt-2 h-11 w-full rounded-lg border border-black/10 bg-black/[0.06] px-4 text-sm font-normal text-[#121212] outline-none transition placeholder:text-[#121212]/35 focus:border-[#D51919] focus:bg-black/[0.09] focus:ring-2 focus:ring-[#D51919]/35"
                 />
               </div>
 
               {error ? (
-                <p className="rounded-lg border border-[#D51919]/35 bg-[#D51919]/10 p-3 text-sm font-normal text-[#F5F5F5]">
+                <p className="rounded-lg border border-[#D51919]/35 bg-[#D51919]/10 p-3 text-sm font-normal text-[#121212]">
                   {error}
                 </p>
               ) : null}
 
               {notice ? (
-                <p className="rounded-lg border border-white/10 bg-white/[0.04] p-3 text-sm font-normal text-[#F5F5F5]/65">
+                <p className="rounded-lg border border-black/10 bg-black/[0.04] p-3 text-sm font-normal text-[#121212]/65">
                   {notice}
                 </p>
               ) : null}
 
-              <div className="flex flex-col gap-3 border-t border-white/10 pt-5 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-3 border-t border-black/10 pt-5 sm:flex-row sm:items-center sm:justify-between">
                 <button
                   type="submit"
                   disabled={isAwardingPoints}
-                  className="h-10 rounded-lg bg-[#D51919] px-4 text-sm font-bold text-[#F5F5F5] transition hover:bg-[#b91616] focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#171717] disabled:cursor-not-allowed disabled:opacity-70"
+                  className="h-10 rounded-lg bg-[#D51919] px-4 text-sm font-bold text-white transition hover:bg-[#b91616] focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#F5F5F5] disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   {isAwardingPoints ? "Saving..." : "Save adjustment"}
                 </button>
@@ -718,7 +718,7 @@ export default function AdminMembersPage() {
                         selectedUserNextStatus,
                       )
                     }
-                    className="h-10 rounded-lg border border-white/10 bg-white/[0.06] px-4 text-sm font-normal text-[#F5F5F5] transition hover:border-[#D51919]/60 hover:bg-[#D51919]/15 focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#171717] disabled:cursor-not-allowed disabled:opacity-45"
+                    className="h-10 rounded-lg border border-black/10 bg-black/[0.06] px-4 text-sm font-normal text-[#121212] transition hover:border-[#D51919]/60 hover:bg-[#D51919]/15 focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#F5F5F5] disabled:cursor-not-allowed disabled:opacity-45"
                   >
                     {pendingUserId === selectedUser.id
                       ? "Saving..."
@@ -732,7 +732,7 @@ export default function AdminMembersPage() {
                       type="button"
                       disabled={pendingUserId === selectedUser.id}
                       onClick={() => void handleDeleteUser(selectedUser)}
-                      className="h-10 rounded-lg border border-[#D51919]/40 bg-[#D51919]/10 px-4 text-sm font-normal text-[#F5F5F5] transition hover:bg-[#D51919]/20 focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#171717] disabled:cursor-not-allowed disabled:opacity-45"
+                      className="h-10 rounded-lg border border-[#D51919]/40 bg-[#D51919]/10 px-4 text-sm font-normal text-[#121212] transition hover:bg-[#D51919]/20 focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#F5F5F5] disabled:cursor-not-allowed disabled:opacity-45"
                     >
                       Delete
                     </button>

@@ -99,8 +99,8 @@ export function DashboardShell({
 
   if (!hasCheckedSession) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#121212] px-6 py-12 font-sans text-[#F5F5F5]">
-        <p className="text-sm font-normal text-[#F5F5F5]/60">
+      <main className="flex min-h-screen items-center justify-center bg-[#F5F5F5] px-6 py-12 font-sans text-[#121212]">
+        <p className="text-sm font-normal text-[#121212]/60">
           Checking access...
         </p>
       </main>
@@ -134,7 +134,7 @@ export function DashboardShell({
       ) : null}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex w-72 transform flex-col border-r border-white/10 bg-[#151515] px-4 py-5 transition-transform duration-200 ${
+        className={`fixed inset-y-0 left-0 z-40 flex w-72 transform flex-col border-r border-black/10 bg-[#F5F5F5] px-4 py-5 transition-transform duration-200 ${
           isMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -149,7 +149,7 @@ export function DashboardShell({
               />
             ) : (
               <span
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-sm font-bold text-[#F5F5F5]"
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-sm font-bold text-white"
                 style={{ backgroundColor: branding.accent_color }}
               >
                 Z
@@ -178,8 +178,8 @@ export function DashboardShell({
                 onClick={() => setIsMenuOpen(false)}
                 className={`block rounded-lg px-3 py-3 text-sm transition ${
                   isActive
-                    ? "font-bold text-[#F5F5F5]"
-                    : "font-normal text-[#F5F5F5]/65 hover:bg-white/[0.06] hover:text-[#F5F5F5]"
+                    ? "font-bold text-white"
+                    : "font-normal text-[#121212]/65 hover:bg-black/[0.06] hover:text-[#121212]"
                 }`}
                 style={isActive ? { backgroundColor: branding.accent_color } : undefined}
               >
@@ -189,17 +189,17 @@ export function DashboardShell({
           })}
         </nav>
 
-        <div className="mt-6 rounded-lg border border-white/10 bg-white/[0.05] p-4">
-          <p className="text-xs font-normal uppercase tracking-[0.16em] text-[#F5F5F5]/45">
+        <div className="mt-6 rounded-lg border border-black/10 bg-black/[0.05] p-4">
+          <p className="text-xs font-normal uppercase tracking-[0.16em] text-[#121212]/45">
             Signed in as
           </p>
-          <p className="mt-2 truncate text-sm font-normal text-[#F5F5F5]">
+          <p className="mt-2 truncate text-sm font-normal text-[#121212]">
             {userEmail}
           </p>
           <button
             type="button"
             onClick={handleSignOut}
-            className="mt-4 h-9 w-full rounded-lg border border-white/10 bg-white/[0.06] px-4 text-sm font-normal text-[#F5F5F5] transition hover:border-[#D51919]/60 hover:bg-[#D51919]/15 focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#151515]"
+            className="mt-4 h-9 w-full rounded-lg border border-black/10 bg-black/[0.06] px-4 text-sm font-normal text-[#121212] transition hover:border-[#D51919]/60 hover:bg-[#D51919]/15 focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#F5F5F5]"
           >
             Sign out
           </button>
@@ -208,7 +208,7 @@ export function DashboardShell({
 
       <div className="min-w-0">
         <header
-          className="sticky top-0 z-20 border-b border-white/10 px-5 py-4 backdrop-blur sm:px-8 lg:px-10"
+          className="sticky top-0 z-20 border-b border-black/10 px-5 py-4 backdrop-blur sm:px-8 lg:px-10"
           style={{ backgroundColor: branding.bg_color }}
         >
           <div className="mx-auto flex w-full max-w-7xl items-center gap-3">
@@ -219,7 +219,7 @@ export function DashboardShell({
                   isMenuOpen ? "Close navigation menu" : "Open navigation menu"
                 }
                 aria-expanded={isMenuOpen}
-                className="flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.06] text-[#F5F5F5] transition hover:border-[#D51919]/60 hover:bg-white/[0.09] focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#121212]"
+                className="flex h-11 w-11 items-center justify-center rounded-lg border border-black/10 bg-black/[0.06] text-[#121212] transition hover:border-[#D51919]/60 hover:bg-black/[0.09] focus:outline-none focus:ring-2 focus:ring-[#D51919] focus:ring-offset-2 focus:ring-offset-[#F5F5F5]"
                 onClick={() => setIsMenuOpen((current) => !current)}
               >
                 <span className="flex w-5 flex-col gap-1.5">
